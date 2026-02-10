@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RED X | Raz Global Network</title>
-    <link rel="icon" type="image/png" href="logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff003c">
     
@@ -15,60 +14,75 @@
     <style>
         :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); }
-        #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--surface); padding: 35px; border-radius: 20px; border: 1px solid #1f1f22; width: 100%; max-width: 380px; text-align: center; }
-        #mainApp { display: none; padding: 20px; max-width: 800px; margin: auto; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--surface); padding: 20px; border-radius: 15px; border: 1px solid #1f1f22; text-align: center; }
-        input, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
-        button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .pulse-msg { background:#121214; padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:10px; border: 1px solid #1f1f22; }
-        .founder-footer { text-align: center; padding: 30px 0; border-top: 1px solid #1f1f22; margin-top: 40px; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* Navigation Tabs */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1f1f22; z-index: 100; }
+        .nav-item { color: #888; font-size: 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
+
+        /* Content Sections */
+        .page { display: none; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
+        .active-page { display: block; }
+
+        /* Tycoon UI Elements (Retained) */
+        .stat-card { background: var(--surface); padding: 20px; border-radius: 15px; border: 1px solid #1f1f22; text-align: center; margin-bottom: 15px; }
+        .news-ticker { background: #1a1a1d; padding: 10px; border-radius: 8px; border-left: 3px solid var(--gold); margin-bottom: 15px; font-size: 12px; }
+        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; }
+        
+        #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); }
     </style>
 </head>
 <body>
 
     <div id="authScreen">
-        <div class="auth-card">
+        <div style="background:var(--surface); padding:35px; border-radius:20px; border:1px solid #1f1f22; width:90%; max-width:380px; text-align:center;">
             <h1 style="letter-spacing:4px; margin-bottom:20px;">RED<span style="color:var(--accent)">X</span></h1>
-            <input type="email" id="email" placeholder="Tycoon Email">
-            <input type="password" id="password" placeholder="Secure Password">
+            <input type="email" id="email" placeholder="Tycoon Email" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:15px;">
+            <input type="password" id="password" placeholder="Secure Password" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:15px;">
             <button onclick="handleAuth('login')">ENTER NETWORK</button>
-            <p style="margin-top:15px; font-size:11px; color:var(--gold); cursor:pointer;" onclick="handleAuth('signup')">CREATE NEW MEMBER ID</p>
         </div>
     </div>
 
-    <div id="mainApp">
-        <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <h2 style="letter-spacing:2px;">RED<span>X</span></h2>
-            <button onclick="logout()" style="width:auto; padding:8px 15px; font-size:10px; background:#222;">LOGOUT</button>
+    <div id="mainApp" style="display:none;">
+        
+        <div id="tab-dash" class="page active-page">
+            <h2 style="margin-bottom:20px;">Dashboard</h2>
+            <div class="stat-card">
+                <p style="font-size:10px; color:#888;">ACTIVE TRADES</p>
+                <h2 id="tradeCount" style="color:var(--gold);">492</h2>
+            </div>
+            <div class="stat-card">
+                <p style="font-size:10px; color:#888;">STRATEGIC PLAN</p>
+                <h2 style="color:var(--accent);">PREMIUM</h2>
+            </div>
+            <div class="news-ticker">Live News: Bitcoin hits new high...</div>
+        </div>
+
+        <div id="tab-pulse" class="page">
+            <h2>Pulse Feed</h2>
+            <p style="font-size:12px; color:#888; margin-bottom:15px;">Broadcast your strategy with media.</p>
+            <button style="background:#222; margin-bottom:15px;">+ Post Photo/Video</button>
+            <div id="pulseFeed"></div>
+        </div>
+
+        <div id="tab-ai" class="page">
+            <h2>RED X AI (RX-I)</h2>
+            <div style="background:var(--surface); height:300px; border-radius:15px; padding:15px; margin-top:20px; border:1px solid #1f1f22;">
+                <p style="color:var(--gold);">RX-I: Ready to analyze, Raz.</p>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('tab-dash', this)">📊<br>DASH</div>
+            <div class="nav-item" onclick="switchTab('tab-pulse', this)">📱<br>PULSE</div>
+            <div class="nav-item" onclick="switchTab('tab-ai', this)">🤖<br>RX-I</div>
+            <div class="nav-item" onclick="logout()">🚪<br>EXIT</div>
         </nav>
-
-        <div class="stat-grid">
-            <div class="stat-card">
-                <p style="font-size: 10px; color: #888;">ACTIVE TRADES</p>
-                <h2 id="tradeCount" style="color: var(--gold);">492</h2>
-            </div>
-            <div class="stat-card">
-                <p style="font-size: 10px; color: #888;">STRATEGIC PLAN</p>
-                <h2 style="font-size: 16px; color: var(--accent);">PREMIUM</h2>
-            </div>
-        </div>
-
-        <div style="background:var(--surface); padding:20px; border-radius:20px; border: 1px solid #1f1f22;">
-            <h3 style="color:var(--accent); margin-bottom:12px;">Global Pulse :!</h3>
-            <textarea id="thoughtInput" placeholder="Broadcast your strategy..."></textarea>
-            <button onclick="broadcastThought()">BROADCAST</button>
-            <div id="pulseFeed" style="margin-top:20px; max-height:400px; overflow-y:auto;"></div>
-        </div>
-
-        <div class="founder-footer">
-            <div style="font-size: 12px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; display: inline-block; font-weight: bold;">PLATFORM BY RAZ</div>
-        </div>
     </div>
 
     <script>
+        // Firebase Config (Keep yours same)
         const firebaseConfig = {
             apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4Fscn8iSKaw",
             authDomain: "red-x-global.firebaseapp.com",
@@ -78,69 +92,34 @@
             messagingSenderId: "831636783622",
             appId: "1:831636783622:web:92271605a0dc5150123987"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const database = firebase.database();
 
-        function handleAuth(type) {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            if(!email || !pass) return alert("Fill data!");
-            if(type === 'login') {
-                auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-            } else {
-                auth.createUserWithEmailAndPassword(email, pass).then(() => alert("ID Created!")).catch(e => alert(e.message));
-            }
+        // Switch Tabs Function
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active-page');
+            el.classList.add('active');
         }
 
-        function logout() { auth.signOut(); }
-
+        // Auth Logic (Retained)
         auth.onAuthStateChanged(user => {
             if(user) {
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
-                loadFeed();
-                updateTradeCount();
             } else {
                 document.getElementById('authScreen').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
             }
         });
 
-        function updateTradeCount() {
-            document.getElementById('tradeCount').innerText = Math.floor(Math.random() * (550 - 450) + 450);
+        function handleAuth(type) {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
         }
-
-        function broadcastThought() {
-            const text = document.getElementById('thoughtInput').value;
-            const user = auth.currentUser;
-            if(text.trim() !== "") {
-                database.ref('thoughts').push({
-                    msg: text,
-                    user: user.email.split('@')[0],
-                    time: new Date().toLocaleTimeString()
-                });
-                document.getElementById('thoughtInput').value = '';
-            }
-        }
-
-        function loadFeed() {
-            database.ref('thoughts').on('value', (snap) => {
-                const feed = document.getElementById('pulseFeed');
-                feed.innerHTML = "";
-                snap.forEach(child => {
-                    const data = child.val();
-                    const div = document.createElement('div');
-                    div.className = 'pulse-msg';
-                    div.innerHTML = `
-                        <div style="font-size:9px; color:var(--gold); margin-bottom:5px;">${data.user.toUpperCase()} BROADCASTED • ${data.time}</div>
-                        <div style="font-size:14px; color:#fff;">${data.msg}</div>
-                    `;
-                    feed.prepend(div);
-                });
-            });
-        }
+        function logout() { auth.signOut(); }
     </script>
 </body>
 </html>
