@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RED X | Global Tycoon OS</title>
     <link rel="manifest" href="manifest.json">
+    
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
 
     <style>
         :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --gray: #888; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
         nav { padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f1f22; position: sticky; top: 0; background: rgba(10, 10, 11, 0.95); backdrop-filter: blur(10px); z-index: 1000; }
@@ -22,21 +23,26 @@
         .card { background: var(--surface); padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #1f1f22; transition: 0.3s ease; }
         
         #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
-        .big-x { font-size: 180px; color: var(--accent); font-weight: 900; line-height: 1; text-shadow: 0 0 30px rgba(255, 0, 60, 0.5); }
+        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; line-height: 1; text-shadow: 0 0 30px rgba(255, 0, 60, 0.5); }
         
-        input { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        input, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; border: 1px solid #333; }
+        input:focus, textarea:focus { border-color: var(--accent); }
+        
         button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .btn-gold { background: var(--gold); color: #000; margin-top: 10px; }
+        
         .project-item { background: #000; padding: 15px; border-radius: 12px; border: 1px solid #1f1f22; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        #pulseFeed { margin-top: 20px; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column-reverse; }
+        .pulse-msg { background:#000; padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:10px; border-top: 1px solid #1f1f22; }
     </style>
 </head>
 <body>
 
     <div id="lockScreen">
         <div class="big-x">X</div>
-        <h1 style="color:var(--accent); font-size: 32px; letter-spacing: 3px;">SYSTEM PROTOCOL ACTIVE</h1>
-        <p>Dopamine threshold exceeded. High-frequency trading detected.</p>
-        <button onclick="unlock()" style="width: 280px;">TERMINATE LOCK</button>
+        <h1 style="color:var(--accent); font-size: 28px;">SYSTEM LOCK ACTIVE</h1>
+        <p style="margin: 20px 0; color: var(--gray);">Trade limit exceeded. Stay disciplined.</p>
+        <button onclick="unlock()" style="width: 250px;">UN-LOCK SYSTEM</button>
     </div>
 
     <nav>
@@ -46,33 +52,42 @@
 
     <div class="container">
         <div class="card">
-            <h3 style="color:var(--accent)">Capital Protection Firewall</h3>
-            <input type="number" id="tradeCount" placeholder="Current Execution Count">
+            <h3 style="color:var(--accent); margin-bottom:15px;">Capital Protection Firewall</h3>
+            <input type="number" id="tradeCount" placeholder="Execution Count">
             <button onclick="checkTrades()">Initialize Audit</button>
         </div>
 
         <div class="card">
-            <h3 style="color:var(--gold)">Global Project Launchpad</h3>
-            <input type="text" id="projName" placeholder="Application Name">
+            <h3 style="color:var(--gold); margin-bottom:15px;">Global Project Launchpad</h3>
+            <input type="text" id="projName" placeholder="Project Name">
             <input type="text" id="projLink" placeholder="Deployment URL">
             <button class="btn-gold" onclick="addProject()">Deploy to Network</button>
             <div id="projectList"></div>
         </div>
+
+        <div class="card">
+            <h3 style="color:var(--accent); margin-bottom:15px;">Global Pulse :!</h3>
+            <p style="font-size: 11px; color: var(--gray); margin-bottom: 10px;">Broadcast strategic opinions to the network.</p>
+            <textarea id="thoughtInput" placeholder="Enter your strategic thought..."></textarea>
+            <button onclick="broadcastThought()">Broadcast to Network</button>
+            <div id="pulseFeed"></div>
+        </div>
     </div>
 
     <script>
+        // Security Lock Logic
         function checkTrades() {
             const count = document.getElementById('tradeCount').value;
             if(count && count > 3) {
                 document.getElementById('lockScreen').style.display = 'flex';
-                localStorage.setItem('redx_locked', 'true');
             }
         }
         function unlock() {
             document.getElementById('lockScreen').style.display = 'none';
-            localStorage.setItem('redx_locked', 'false');
             document.getElementById('tradeCount').value = '';
         }
+
+        // Project Deployment Logic
         function addProject() {
             const name = document.getElementById('projName').value;
             const link = document.getElementById('projLink').value;
@@ -80,10 +95,27 @@
                 const list = document.getElementById('projectList');
                 const item = document.createElement('div');
                 item.className = 'project-item';
-                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank" style="color:var(--gold); text-decoration:none;">ACCESS DEPLOYMENT</a>`;
+                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank" style="color:var(--gold); text-decoration:none; font-weight:bold; font-size:12px;">ACCESS</a>`;
                 list.appendChild(item);
                 document.getElementById('projName').value = '';
                 document.getElementById('projLink').value = '';
+            }
+        }
+
+        // Real-time Feed Logic
+        function broadcastThought() {
+            const text = document.getElementById('thoughtInput').value;
+            const feed = document.getElementById('pulseFeed');
+            if(text.trim() !== "") {
+                const msg = document.createElement('div');
+                msg.className = 'pulse-msg';
+                msg.innerHTML = `
+                    <div style="font-size:9px; color:var(--gold); margin-bottom:5px;">NETWORK BROADCAST</div>
+                    <div style="color:#fff; font-size:14px;">${text}</div>
+                `;
+                feed.appendChild(msg);
+                document.getElementById('thoughtInput').value = '';
+                feed.scrollTop = feed.scrollHeight;
             }
         }
     </script>
