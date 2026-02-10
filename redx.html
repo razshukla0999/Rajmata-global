@@ -3,210 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RED X | The Tycoon Circle</title>
+    <title>RED X | Tycoon Operating System</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* Midnight Obsidian Theme */
-        :root {
-            --bg: #0a0a0b;
-            --surface: #161618;
-            --accent: #ff003c; /* Neon Red X */
-            --gold: #d4af37;
-            --text: #e0e0e0;
-            --gray: #888;
-        }
-
+        :root { --bg: #0a0a0b; --surface: #161618; --accent: #ff003c; --gold: #d4af37; --text: #e0e0e0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        /* Layout */
+        nav { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; sticky: top; background: var(--bg); z-index: 100; }
+        .container { padding: 20px; max-width: 800px; margin: auto; }
+        .card { background: var(--surface); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #222; }
+        
+        /* Trade Lock UI */
+        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; }
+        
+        /* Input & Buttons */
+        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; }
+        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        .gold-btn { background: var(--gold); color: #000; margin-top: 10px; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* Background Glow Effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: -10%; left: -10%;
-            width: 40%; height: 40%;
-            background: radial-gradient(circle, rgba(255, 0, 60, 0.1) 0%, transparent 70%);
-            z-index: -1;
-        }
-
-        /* Header / Navbar */
-        nav {
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: var(--text);
-        }
-
-        .logo span { color: var(--accent); }
-
-        /* Main Dashboard Environment */
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .hero-section {
-            text-align: center;
-            margin-bottom: 60px;
-            animation: fadeIn 1.5s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hero-section h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #fff, var(--gray));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* The 3 Pillars Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(255, 0, 60, 0.1);
-        }
-
-        .card h3 { color: var(--gold); margin-bottom: 15px; font-size: 1.5rem; }
-        .card p { color: var(--gray); line-height: 1.6; font-size: 0.95rem; }
-
-        /* Status Indicator (Environment Feel) */
-        .status-bar {
-            background: rgba(255, 0, 60, 0.05);
-            border: 1px solid var(--accent);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .pulse {
-            width: 10px; height: 10px;
-            background: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
-            animation: pulse-animation 2s infinite;
-        }
-
-        @keyframes pulse-animation { 0% { transform: scale(0.95); opacity: 0.7; } 70% { transform: scale(1.3); opacity: 0; } 100% { transform: scale(0.95); opacity: 0; } }
-
-        /* Launch Button */
-        .btn-launch {
-            margin-top: 40px;
-            padding: 18px 40px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-
-        .btn-launch:hover {
-            box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
-            transform: scale(1.05);
-        }
-
-        /* Footer Wisdom */
-        footer {
-            margin-top: 100px;
-            padding: 40px;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--gray);
-            font-style: italic;
-        }
+        /* Project List */
+        .project-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        .project-item a { color: var(--gold); text-decoration: none; }
     </style>
 </head>
 <body>
 
+    <div id="lockScreen">
+        <div class="big-x">X</div>
+        <h1 style="color:var(--accent)">DOPAMINE LIMIT REACHED</h1>
+        <p>You have finished your 3 trades. System is locked for discipline.</p>
+        <button onclick="unlock()" style="margin-top:20px; width:200px">I UNDERSTAND</button>
+    </div>
+
     <nav>
-        <div class="logo">RED<span>X</span></div>
-        <div style="color: var(--gold); font-weight: bold;">TYCOON MODE</div>
+        <div style="font-weight:900; letter-spacing:2px">RED<span style="color:var(--accent)">X</span></div>
+        <div style="color:var(--gold); font-size:12px">CORE v1.0</div>
     </nav>
 
     <div class="container">
-        <header class="hero-section">
-            <h1>The Mastermind Group</h1>
-            <p>Where Traders become Tycoons through Logic, not Dopamine.</p>
-            
-            <div class="status-bar">
-                <div class="pulse"></div>
-                <span>Current Environment: <strong>High Discipline Zone</strong></span>
-            </div>
-        </header>
-
-        <div class="grid">
-            <div class="card">
-                <h3>X-Lock System</h3>
-                <p>Anti-overtrading engine. Automatically freezes terminal after 3 trades to protect your capital and mental peace.</p>
-            </div>
-
-            <div class="card">
-                <h3>Project Launchpad</h3>
-                <p>Publicly showcase your coding projects. Get real-world feedback and accelerate your Google Indexing speed.</p>
-            </div>
-
-            <div class="card">
-                <h3>Universal Feed</h3>
-                <p>Daily insights from Elon Musk, Nikhil Kamath, and Gita in Action. Sync your rhythm with the top 1%.</p>
-            </div>
+        <div class="card">
+            <h3 style="color:var(--accent)">1. Trade Guard</h3>
+            <p style="font-size:12px; color:#888">Enter your current trade count to audit your discipline.</p>
+            <input type="number" id="tradeCount" placeholder="How many trades today?">
+            <button onclick="checkTrades()">AUDIT TRADES</button>
         </div>
 
-        <div style="text-align: center;">
-            <button class="btn-launch" onclick="startApp()">Enter Red X Experience</button>
+        <div class="card">
+            <h3 style="color:var(--gold)">2. Project Launchpad</h3>
+            <input type="text" id="projName" placeholder="Project Name (e.g. Rajmata Global)">
+            <input type="text" id="projLink" placeholder="GitHub/Live Link">
+            <button class="gold-btn" onclick="addProject()">PUBLISH TO CIRCLE</button>
+            <div id="projectList" style="margin-top:20px">
+                </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#eee">3. Universal Wisdom</h3>
+            <p id="wisdomText" style="font-style:italic; color:#888; margin-top:10px">"Value creation is the only path to true wealth." - Elon Musk</p>
         </div>
     </div>
 
-    <footer>
-        "Success is a slow process, but quitting won't speed it up." - Tycoon Wisdom
-    </footer>
-
     <script>
-        function startApp() {
-            alert("Initiating Red X Environment... Welcome, Tycoon!");
-            // Yahan hum aage ke features (Login/Database) link karenge
+        // 1. Trade Lock Logic
+        function checkTrades() {
+            const count = document.getElementById('tradeCount').value;
+            if(count > 3) {
+                document.getElementById('lockScreen').style.display = 'flex';
+                localStorage.setItem('redx_locked', 'true');
+            } else {
+                alert("Good Discipline, Tycoon! Keep it under control.");
+            }
         }
+
+        function unlock() {
+            document.getElementById('lockScreen').style.display = 'none';
+            localStorage.setItem('redx_locked', 'false');
+        }
+
+        // 2. Project Launchpad Logic
+        function addProject() {
+            const name = document.getElementById('projName').value;
+            const link = document.getElementById('projLink').value;
+            if(name && link) {
+                const list = document.getElementById('projectList');
+                const item = document.createElement('div');
+                item.className = 'project-item';
+                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank">VIEW →</a>`;
+                list.appendChild(item);
+                // Clear inputs
+                document.getElementById('projName').value = '';
+                document.getElementById('projLink').value = '';
+            }
+        }
+
+        // Auto-Lock Check on Load
+        window.onload = function() {
+            if(localStorage.getItem('redx_locked') === 'true') {
+                document.getElementById('lockScreen').style.display = 'flex';
+            }
+        };
     </script>
 </body>
-
 </html>
