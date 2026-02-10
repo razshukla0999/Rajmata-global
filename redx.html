@@ -3,88 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RED X | Tycoon Operating System</title>
+    <title>RED X | Owned by Tycoon</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root { --bg: #0a0a0b; --surface: #161618; --accent: #ff003c; --gold: #d4af37; --text: #e0e0e0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); line-height: 1.6; }
         
-        /* Layout */
-        nav { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; sticky: top; background: var(--bg); z-index: 100; }
+        nav { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; position: sticky; top: 0; background: var(--bg); z-index: 100; }
         .container { padding: 20px; max-width: 800px; margin: auto; }
         .card { background: var(--surface); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #222; }
         
-        /* Trade Lock UI */
-        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; }
+        /* Firewall / Lock Screen */
+        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; line-height: 1; }
         
-        /* Input & Buttons */
-        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; }
-        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
+        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; outline: none; }
+        input:focus { border-color: var(--accent); }
+        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        button:hover { background: #cc0030; transform: scale(1.01); }
         .gold-btn { background: var(--gold); color: #000; margin-top: 10px; }
 
-        /* Project List */
-        .project-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
-        .project-item a { color: var(--gold); text-decoration: none; }
+        .project-item { padding: 12px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .project-item a { color: var(--gold); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="lockScreen">
         <div class="big-x">X</div>
-        <h1 style="color:var(--accent)">DOPAMINE LIMIT REACHED</h1>
-        <p>You have finished your 3 trades. System is locked for discipline.</p>
-        <button onclick="unlock()" style="margin-top:20px; width:200px">I UNDERSTAND</button>
+        <h1 style="color:var(--accent); letter-spacing: 2px;">FIREWALL ACTIVE</h1>
+        <p style="margin: 15px 0; color: #888;">Dopamine limit cross kar di hai. Discipline hi Tycoon ki pehchan hai. Aaj ke liye trading band!</p>
+        <button onclick="unlock()" style="width: 250px;">I AM DISCIPLINED</button>
     </div>
 
     <nav>
-        <div style="font-weight:900; letter-spacing:2px">RED<span style="color:var(--accent)">X</span></div>
-        <div style="color:var(--gold); font-size:12px">CORE v1.0</div>
+        <div style="font-weight:900; letter-spacing:2px; font-size: 20px;">RED<span style="color:var(--accent)">X</span> :!</div>
+        <div style="color:var(--gold); font-size:12px; border: 1px solid var(--gold); padding: 2px 8px; border-radius: 4px;">FOUNDER MODE</div>
     </nav>
 
     <div class="container">
         <div class="card">
-            <h3 style="color:var(--accent)">1. Trade Guard</h3>
-            <p style="font-size:12px; color:#888">Enter your current trade count to audit your discipline.</p>
-            <input type="number" id="tradeCount" placeholder="How many trades today?">
-            <button onclick="checkTrades()">AUDIT TRADES</button>
+            <h3 style="color:var(--accent)">🔱 Trade Firewall</h3>
+            <p style="font-size:12px; color:#888; margin-bottom: 10px;">3 Trades ke baad system auto-lock ho jayega.</p>
+            <input type="number" id="tradeCount" placeholder="Aaj kitne trades liye?">
+            <button onclick="checkTrades()">ACTIVATE GUARD</button>
         </div>
 
         <div class="card">
-            <h3 style="color:var(--gold)">2. Project Launchpad</h3>
+            <h3 style="color:var(--gold)">🔱 My Project Launchpad</h3>
+            <p style="font-size:12px; color:#888; margin-bottom: 10px;">Apne naye projects yahan list karo.</p>
             <input type="text" id="projName" placeholder="Project Name (e.g. Rajmata Global)">
-            <input type="text" id="projLink" placeholder="GitHub/Live Link">
-            <button class="gold-btn" onclick="addProject()">PUBLISH TO CIRCLE</button>
-            <div id="projectList" style="margin-top:20px">
-                </div>
+            <input type="text" id="projLink" placeholder="GitHub / Live Link">
+            <button class="gold-btn" onclick="addProject()">PUBLISH TO MY CIRCLE</button>
+            <div id="projectList" style="margin-top:20px"></div>
         </div>
 
-        <div class="card">
-            <h3 style="color:#eee">3. Universal Wisdom</h3>
-            <p id="wisdomText" style="font-style:italic; color:#888; margin-top:10px">"Value creation is the only path to true wealth." - Elon Musk</p>
+        <div class="card" style="text-align: center;">
+            <h3 style="color:#eee">🔱 Red X Wisdom</h3>
+            <p id="wisdomText" style="font-style:italic; color:var(--gold); margin-top:10px; font-size: 1.1rem;">"Asli wealth trade se nahi, value create karne se aati hai."</p>
+            <p style="color: #555; font-size: 12px; margin-top: 5px;">— Red X :! Philosophy</p>
         </div>
     </div>
 
     <script>
-        // 1. Trade Lock Logic
+        // Firewall Logic
         function checkTrades() {
             const count = document.getElementById('tradeCount').value;
-            if(count > 3) {
+            if(count && count > 3) {
                 document.getElementById('lockScreen').style.display = 'flex';
                 localStorage.setItem('redx_locked', 'true');
-            } else {
-                alert("Good Discipline, Tycoon! Keep it under control.");
+            } else if(count) {
+                alert("Control mein hai bhai! Agla trade soch-samajh kar.");
             }
         }
 
         function unlock() {
             document.getElementById('lockScreen').style.display = 'none';
             localStorage.setItem('redx_locked', 'false');
+            document.getElementById('tradeCount').value = '';
         }
 
-        // 2. Project Launchpad Logic
+        // Launchpad Logic
         function addProject() {
             const name = document.getElementById('projName').value;
             const link = document.getElementById('projLink').value;
@@ -92,15 +92,13 @@
                 const list = document.getElementById('projectList');
                 const item = document.createElement('div');
                 item.className = 'project-item';
-                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank">VIEW →</a>`;
+                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank">OPEN →</a>`;
                 list.appendChild(item);
-                // Clear inputs
                 document.getElementById('projName').value = '';
                 document.getElementById('projLink').value = '';
             }
         }
 
-        // Auto-Lock Check on Load
         window.onload = function() {
             if(localStorage.getItem('redx_locked') === 'true') {
                 document.getElementById('lockScreen').style.display = 'flex';
