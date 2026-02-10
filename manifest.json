@@ -1,16 +1,16 @@
 {
-  "name": "Red X: Tycoon Circle",
-  "short_name": "RedX",
-  "description": "The Ultimate Environment for Traders and Builders.",
-  "start_url": "redx.html",
-  "display": "standalone",
-  "background_color": "#0a0a0b",
-  "theme_color": "#ff003c",
+  "short_name": "RED X :!",
+  "name": "RED X Tycoon OS",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/5968/5968263.png",
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "start_url": "redx.html",
+  "background_color": "#0a0a0b",
+  "display": "standalone",
+  "theme_color": "#ff003c"
 }
