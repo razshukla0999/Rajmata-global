@@ -4,112 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RED X | Raz Global Network</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff003c">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <style>
-        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; }
+        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --green: #00ff88; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
         /* Navigation */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1f1f22; z-index: 1000; }
-        .nav-item { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
 
         /* Screens */
         .screen { display: none; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 90px; }
-        .active-screen { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .active-screen { display: block; }
 
-        .stat-card { background: var(--surface); padding: 20px; border-radius: 20px; border: 1px solid #1f1f22; margin-bottom: 15px; text-align: center; }
-        .news-bar { background: rgba(255, 0, 60, 0.1); color: var(--accent); padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; margin-bottom: 20px; border: 1px solid rgba(255,0,60,0.2); }
-        button { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; }
-        
-        /* Auth Overlay (Pop-up) */
-        #authOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        /* Live Rates Cards */
+        .rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .rate-card { background: var(--surface); padding: 15px; border-radius: 15px; border: 1px solid #1f1f22; }
+        .rate-val { color: var(--green); font-weight: 800; font-size: 18px; margin-top: 5px; }
+
+        /* News Section */
+        .news-item { background: var(--surface); padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--accent); }
+        .news-tag { font-size: 9px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .news-title { font-size: 13px; font-weight: 600; margin-top: 5px; line-height: 1.4; }
+
+        .ticker-wrap { background: rgba(255, 0, 60, 0.1); color: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 20px; font-size: 11px; font-weight: bold; overflow: hidden; white-space: nowrap; }
     </style>
 </head>
 <body>
 
     <div id="mainApp">
-        
         <div id="tab-dash" class="screen active-screen">
-            <div class="news-bar" id="ticker">MARKET PULSE: Connecting to RED X Global...</div>
-            <h2 style="margin-bottom:20px; letter-spacing:1px;">RED X <span style="color:var(--gold); font-size:12px;">GLOBAL</span></h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="stat-card">
-                    <p style="font-size:10px; color:#888;">ACTIVE TRADES</p>
-                    <h2 id="tradeCount" style="color:var(--gold);">492</h2>
+            <div class="ticker-wrap"><marquee scrollamount="5" id="global-ticker">INITIALIZING GLOBAL MARKET FEED...</marquee></div>
+            <h2 style="margin-bottom:15px;">Market Overview</h2>
+            
+            <div class="rate-grid">
+                <div class="rate-card">
+                    <p style="font-size:10px; color:#888;">BTC / USD</p>
+                    <div class="rate-val" id="btc-rate">Loading...</div>
                 </div>
-                <div class="stat-card">
-                    <p style="font-size:10px; color:#888;">STATUS</p>
-                    <h2 style="font-size:14px; color:var(--accent);">GUEST</h2>
+                <div class="rate-card">
+                    <p style="font-size:10px; color:#888;">XAU / USD (GOLD)</p>
+                    <div class="rate-val" id="xau-rate" style="color:var(--gold);">Loading...</div>
                 </div>
             </div>
-            <div class="stat-card" onclick="showLogin()" style="cursor:pointer; border-color:var(--gold);">
-                <p style="color:var(--gold); font-size:12px;">🔱 LOGIN AS TYCOON FOR FULL ACCESS</p>
+
+            <div class="stat-card" style="background:var(--surface); padding:20px; border-radius:15px; text-align:center; border:1px solid #1f1f22;">
+                <p style="font-size:10px; color:#888;">TYCOON STATUS</p>
+                <h3 style="color:var(--gold); margin-top:5px;">GUEST ACCESS</h3>
+            </div>
+        </div>
+
+        <div id="tab-news" class="screen">
+            <h2 style="margin-bottom:15px;">Global News Feed</h2>
+            <div id="news-container">
+                <div class="news-item">
+                    <div class="news-tag">BREAKING</div>
+                    <div class="news-title">Global Markets wait for US FED Interest Rate Decision...</div>
+                </div>
             </div>
         </div>
 
         <div id="tab-pulse" class="screen">
-            <h2>Business Reels</h2>
+            <h2>Market Insights</h2>
             <div style="height:70vh; background:#000; border-radius:20px; margin-top:20px; display:flex; align-items:center; justify-content:center; color:#333; border:1px solid #1f1f22;">
-                Reel Content Loading...
+                Insights Feed (Videos Coming Soon)
             </div>
-            <button onclick="checkAuthAction()" style="margin-top:20px; background:var(--surface);">+ Post Media</button>
-        </div>
-
-        <div id="tab-ai" class="screen">
-            <h2>RX-I Intelligence</h2>
-            <div id="aiBox" style="background:#000; height:350px; border-radius:20px; padding:20px; margin-top:20px; border:1px solid #1f1f22; display:flex; align-items:center; justify-content:center; text-align:center;">
-                <p style="color:#555;">AI Analysis requires Tycoon Login.</p>
-            </div>
-            <button onclick="showLogin()" style="margin-top:20px; background:var(--gold); color:#000;">LOGIN TO USE AI</button>
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('tab-dash', this)">📊<br>DASH</div>
-            <div class="nav-item" onclick="switchTab('tab-pulse', this)">🎬<br>REELS</div>
+            <div class="nav-item active" onclick="switchTab('tab-dash', this)">📊<br>MARKET</div>
+            <div class="nav-item" onclick="switchTab('tab-news', this)">📰<br>NEWS</div>
+            <div class="nav-item" onclick="switchTab('tab-pulse', this)">🎬<br>INSIGHTS</div>
             <div class="nav-item" onclick="switchTab('tab-ai', this)">🤖<br>RX-I</div>
-            <div class="nav-item" onclick="showLogin()">🆔<br>LOGIN</div>
         </nav>
     </div>
 
-    <div id="authOverlay">
-        <div style="background:var(--surface); padding:30px; border-radius:25px; width:100%; max-width:350px; text-align:center;">
-            <h2 style="margin-bottom:20px;">TYCOON LOGIN</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="handleLogin()">ENTER NETWORK</button>
-            <p onclick="hideLogin()" style="margin-top:20px; font-size:11px; color:#888; cursor:pointer;">Close (Continue as Guest)</p>
-        </div>
-    </div>
-
     <script>
-        // FIREBASE SETUP (Same)
-        const firebaseConfig = { apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4Fscn8iSKaw", authDomain: "red-x-global.firebaseapp.com", projectId: "red-x-global", databaseURL: "https://red-x-global-default-rtdb.firebaseio.com", storageBucket: "red-x-global.firebasestorage.app", messagingSenderId: "831636783622", appId: "1:831636783622:web:92271605a0dc5150123987" };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        // 1. Optional Access Logic
-        function showLogin() { document.getElementById('authOverlay').style.display = 'flex'; }
-        function hideLogin() { document.getElementById('authOverlay').style.display = 'none'; }
-
-        function checkAuthAction() {
-            if(!auth.currentUser) {
-                alert("Bhai, post karne ke liye Login karna padega!");
-                showLogin();
-            } else {
-                alert("Upload system coming in Phase 3!");
+        // 1. Fetch Real-Time Market Rates
+        async function fetchRates() {
+            try {
+                const response = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,XAU&tsyms=USD');
+                const data = await response.json();
+                document.getElementById('btc-rate').innerText = "$" + data.BTC.USD.toLocaleString();
+                document.getElementById('xau-rate').innerText = "$" + data.XAU.USD.toLocaleString();
+                document.getElementById('global-ticker').innerText = `BTC: $${data.BTC.USD} | XAU: $${data.XAU.USD} | ETH: UP | MARKET VOLATILITY: HIGH`;
+            } catch (e) {
+                console.log("Rate fetch failed");
             }
         }
 
-        // 2. Navigation & News (Guest friendly)
+        // 2. Navigation
         function switchTab(id, el) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -117,25 +102,9 @@
             el.classList.add('active');
         }
 
-        function startNews() {
-            const items = ["Gold Price Surges +1.2%", "BTC Support at $66k", "Raz Verified Status: Active"];
-            let i = 0;
-            setInterval(() => {
-                document.getElementById('ticker').innerText = "MARKET PULSE: " + items[i];
-                i = (i + 1) % items.length;
-            }, 5000);
-        }
-
-        window.onload = startNews;
-
-        function handleLogin() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(e, p).then(() => {
-                hideLogin();
-                alert("Welcome Back, Tycoon!");
-            }).catch(err => alert(err.message));
-        }
+        // Auto Refresh Rates
+        setInterval(fetchRates, 10000);
+        window.onload = fetchRates;
     </script>
 </body>
 </html>
