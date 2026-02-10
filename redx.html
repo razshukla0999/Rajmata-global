@@ -3,114 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RED X | Tycoon Network</title>
+    <title>RED X TERMINAL</title>
     <style>
-        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --green: #00ff88; }
-        .light-theme { --bg: #f0f2f5; --surface: #ffffff; --text: #1a1a1a; --gold: #b8860b; }
+        :root { --bg: #050505; --card: #121212; --accent: #ff003c; --gold: #d4af37; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+        /* Fixed Header */
+        .header { background: #000; color: var(--gold); padding: 12px; font-size: 12px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+        
+        .container { padding: 15px; padding-bottom: 80px; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #222; }
+        
+        .price-box { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 22px; font-weight: bold; color: #00ff88; }
+        
+        /* TradingView Widget Container */
+        .chart-container { height: 300px; background: #121212; border-radius: 12px; overflow: hidden; margin-top: 10px; border: 1px solid #333; }
 
-        /* Global Header Marquee */
-        .market-header { background: #000; color: var(--gold); padding: 8px 0; border-bottom: 1px solid var(--accent); font-size: 11px; font-weight: bold; overflow: hidden; white-space: nowrap; }
-        
         /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { color: #888; font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
-
-        /* Screens */
-        .screen { display: none; height: 100vh; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
-        .active-screen { display: block; animation: fadeIn 0.4s; }
-
-        /* Live Data Cards */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .card { background: var(--surface); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .price { font-size: 18px; font-weight: 900; color: var(--green); margin-top: 5px; }
-
-        /* Professional News UI */
-        .news-box { background: var(--surface); padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 3px solid var(--accent); }
-        .news-meta { font-size: 9px; color: var(--gold); display: flex; justify-content: space-between; }
-        
-        /* Settings UI */
-        .set-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--surface); border-radius: 12px; margin-bottom: 10px; }
-        
-        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
+        .nav-item { color: #888; font-size: 11px; text-align: center; cursor: pointer; }
+        .nav-active { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="market-header">
-        <marquee scrollamount="6" id="master-ticker">
-            BTC/USD: $Loading... | XAU/USD: $Loading... | ETH/USD: $Loading... | NASDAQ: Loading... | NIFTY 50: Loading... | EUR/USD: Loading... | OIL: Loading...
-        </marquee>
+    <div class="header">
+        <marquee>BTC/USD: <span id="btc-tick">...</span> | XAU/USD: <span id="xau-tick">...</span> | NASDAQ: LOADING | RED X TYCOON TERMINAL ONLINE</marquee>
     </div>
 
-    <div id="mainApp">
-        <div id="tab-market" class="screen active-screen">
-            <h2 style="letter-spacing: -1px;">Live Terminal</h2>
-            <div class="grid">
-                <div class="card"><p style="font-size:10px; color:#888;">BITCOIN</p><div class="price" id="btc-val">...</div></div>
-                <div class="card"><p style="font-size:10px; color:#888;">GOLD (XAU)</p><div class="price" id="xau-val" style="color:var(--gold);">...</div></div>
-                <div class="card"><p style="font-size:10px; color:#888;">ETHEREUM</p><div class="price" id="eth-val">...</div></div>
-                <div class="card"><p style="font-size:10px; color:#888;">DOW JONES</p><div class="price" id="dow-val" style="color:#0088ff;">38,450</div></div>
-            </div>
-            <div style="margin-top:20px; border-radius:15px; overflow:hidden; border:1px solid #333;">
-                <img src="https://api.tradingview.com/v1/symbol_chart?symbol=FX:XAUUSD&interval=1D&theme=dark" style="width:100%; display:block;" alt="Market Chart Preview">
+    <div class="container">
+        <h2 style="font-size: 18px; margin-bottom: 15px;">Live Market Data</h2>
+        
+        <div class="card">
+            <div class="price-box">
+                <span>BITCOIN</span>
+                <span class="price" id="btc-main">$0.00</span>
             </div>
         </div>
 
-        <div id="tab-news" class="screen">
-            <h2 style="margin-bottom:15px;">Global Intelligence</h2>
-            <div id="news-feed">
-                <div class="news-box">
-                    <div class="news-meta"><span>REUTERS</span><span>2 MIN AGO</span></div>
-                    <div style="font-size:13px; font-weight:600; margin-top:5px;">US Inflation data to trigger Gold volatility. Tycoons advised to stay cautious.</div>
-                </div>
-                <div class="news-box">
-                    <div class="news-meta"><span>BLOOMBERG</span><span>15 MIN AGO</span></div>
-                    <div style="font-size:13px; font-weight:600; margin-top:5px;">Bitcoin Institutional Inflow hits record $2B this week.</div>
-                </div>
+        <div class="card">
+            <div class="price-box">
+                <span>GOLD (SPOT)</span>
+                <span class="price" id="xau-main" style="color:var(--gold)">$0.00</span>
             </div>
         </div>
 
-        <div id="tab-settings" class="screen">
-            <h2>Settings</h2>
-            <div class="set-row">
-                <span>Dark Mode</span>
-                <input type="checkbox" id="theme-toggle" checked onclick="toggleTheme()">
-            </div>
-            <div class="set-row">
-                <span>Bio-Metric Lock</span>
-                <span style="font-size:10px; color:var(--gold);">SYSTEM ACTIVE</span>
-            </div>
-            <div class="set-row">
-                <span>Trade Limit</span>
-                <select style="background:none; color:var(--gold); border:none; font-weight:bold;"><option>3 Trades</option><option>5 Trades</option></select>
-            </div>
-            <button onclick="alert('Tycoon Profile Coming Soon')" style="margin-top:20px;">UPDATE PROFILE</button>
+        <div class="chart-container">
+            <iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=FX%3AXAUUSD&theme=dark&autosize=true" width="100%" height="100%" frameborder="0"></iframe>
         </div>
+    </div>
 
-        <div id="tab-ai" class="screen">
-            <h2>RED X AI (RX-I)</h2>
-            <div style="background:#000; height:300px; border-radius:20px; border:1px solid #333; margin-top:20px; padding:15px; overflow-y:auto;" id="ai-chat">
-                <p style="color:var(--gold);">RX-I: System initialized. Ask for Trade Sentiment, Raz.</p>
-            </div>
-            <button onclick="aiReply()" style="margin-top:15px; background:var(--gold); color:#000;">GENERATE STRATEGY</button>
-        </div>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('tab-market', this)">📊<br>MARKET</div>
-            <div class="nav-item" onclick="switchTab('tab-news', this)">📰<br>NEWS</div>
-            <div class="nav-item" onclick="switchTab('tab-ai', this)">🤖<br>RX-I</div>
-            <div class="nav-item" onclick="switchTab('tab-settings', this)">⚙️<br>SETUP</div>
-        </nav>
+    <div class="nav">
+        <div class="nav-item nav-active">📊<br>MARKET</div>
+        <div class="nav-item" onclick="location.reload()">🔄<br>REFRESH</div>
+        <div class="nav-item" onclick="alert('Settings Open')">⚙️<br>SETUP</div>
     </div>
 
     <script>
-        // 1. Live Market Data Logic
-        async function updateMarket() {
+        async function fetchMarketData() {
             try {
-                const res = await fetch('
+                // Using a more reliable API endpoint
+                const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                const btcData = await response.json();
+                
+                const btcPrice = parseFloat(btcData.price).toFixed(2);
+                document.getElementById('btc-main').innerText = '$' + btcPrice;
+                document.getElementById('btc-tick').innerText = '$' + btcPrice;
+                
+                // Gold price approximate (Binance doesn't have XAU, using a placeholder for instant load)
+                document.getElementById('xau-main').innerText = '$2,034.50';
+                document.getElementById('xau-tick').innerText = '$2,034.50';
+                
+            } catch (error) {
+                console.error("API Error");
+            }
+        }
+
+        // Run immediately
+        fetchMarketData();
+        // Update every 5 seconds
+        setInterval(fetchMarketData, 5000);
+    </script>
+</body>
+</html>
