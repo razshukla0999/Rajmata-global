@@ -12,140 +12,104 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
         /* Navigation */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1f1f22; z-index: 1000; }
-        .nav-item { color: #555; font-size: 10px; text-align: center; cursor: pointer; transition: 0.3s; flex: 1; }
+        .nav-item { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
 
-        /* Screen Sections */
+        /* Screens */
         .screen { display: none; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 90px; }
-        .active-screen { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .active-screen { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Components */
         .stat-card { background: var(--surface); padding: 20px; border-radius: 20px; border: 1px solid #1f1f22; margin-bottom: 15px; text-align: center; }
-        .news-bar { background: rgba(212, 175, 55, 0.1); color: var(--gold); padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.2); }
-        .post-card { background: var(--surface); border-radius: 15px; margin-bottom: 15px; overflow: hidden; border: 1px solid #1f1f22; }
-        .media-placeholder { background: #000; height: 200px; display: flex; align-items: center; justify-content: center; color: #333; }
-        button { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.98); }
-        input, select { width: 100%; padding: 15px; background: #000; border: 1px solid #1f1f22; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
-
-        /* Reels Styling */
-        .reels-container { height: 70vh; scroll-snap-type: y mandatory; overflow-y: scroll; border-radius: 20px; }
-        .reel { height: 100%; scroll-snap-align: start; background: #000; position: relative; border-bottom: 2px solid var(--surface); }
+        .news-bar { background: rgba(255, 0, 60, 0.1); color: var(--accent); padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; margin-bottom: 20px; border: 1px solid rgba(255,0,60,0.2); }
+        button { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; }
+        
+        /* Auth Overlay (Pop-up) */
+        #authOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="authScreen" style="height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:var(--surface); padding:35px; border-radius:25px; border:1px solid #1f1f22; width:100%; max-width:380px; text-align:center;">
-            <h1 style="letter-spacing:5px; margin-bottom:25px;">RED<span style="color:var(--accent)">X</span></h1>
-            <input type="email" id="email" placeholder="Tycoon Email">
-            <input type="password" id="password" placeholder="Secure Password">
-            <button onclick="handleAuth()">ENTER NETWORK</button>
-            <p style="font-size:11px; margin-top:20px; color:var(--gold); cursor:pointer;">New Member? Create ID</p>
-        </div>
-    </div>
-
-    <div id="mainApp" style="display:none;">
+    <div id="mainApp">
         
         <div id="tab-dash" class="screen active-screen">
-            <div class="news-bar" id="ticker">MARKET PULSE: Initializing RX-I...</div>
-            <h2 style="margin-bottom:20px;">Dashboard</h2>
+            <div class="news-bar" id="ticker">MARKET PULSE: Connecting to RED X Global...</div>
+            <h2 style="margin-bottom:20px; letter-spacing:1px;">RED X <span style="color:var(--gold); font-size:12px;">GLOBAL</span></h2>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="stat-card">
                     <p style="font-size:10px; color:#888;">ACTIVE TRADES</p>
                     <h2 id="tradeCount" style="color:var(--gold);">492</h2>
                 </div>
                 <div class="stat-card">
-                    <p style="font-size:10px; color:#888;">MY STATUS</p>
-                    <h2 style="font-size:14px; color:var(--accent);">PREMIUM</h2>
+                    <p style="font-size:10px; color:#888;">STATUS</p>
+                    <h2 style="font-size:14px; color:var(--accent);">GUEST</h2>
                 </div>
             </div>
-            <div class="stat-card">
-                <p style="font-size:10px; color:#888;">FOUNDER'S NOTE</p>
-                <p style="font-size:12px; margin-top:10px;">"Market high, Trade low. Wait for RX-I signals." - RAZ</p>
+            <div class="stat-card" onclick="showLogin()" style="cursor:pointer; border-color:var(--gold);">
+                <p style="color:var(--gold); font-size:12px;">🔱 LOGIN AS TYCOON FOR FULL ACCESS</p>
             </div>
         </div>
 
         <div id="tab-pulse" class="screen">
-            <h2 style="margin-bottom:15px;">Business Reels</h2>
-            <div class="reels-container">
-                <div class="reel"><div class="media-placeholder">Trading Video 1 (Upload to Enable)</div></div>
-                <div class="reel"><div class="media-placeholder">Trading Video 2 (Upload to Enable)</div></div>
+            <h2>Business Reels</h2>
+            <div style="height:70vh; background:#000; border-radius:20px; margin-top:20px; display:flex; align-items:center; justify-content:center; color:#333; border:1px solid #1f1f22;">
+                Reel Content Loading...
             </div>
-            <button style="margin-top:15px; background:var(--surface); border:1px solid var(--accent);">+ Post Reel/Photo</button>
+            <button onclick="checkAuthAction()" style="margin-top:20px; background:var(--surface);">+ Post Media</button>
         </div>
 
         <div id="tab-ai" class="screen">
             <h2>RX-I Intelligence</h2>
-            <div id="aiBox" style="background:#000; height:350px; border-radius:20px; padding:20px; margin-top:20px; border:1px solid #1f1f22; overflow-y:auto;">
-                <p style="color:var(--gold); font-size:14px;">RX-I Online. Ready to analyze market Raz...</p>
+            <div id="aiBox" style="background:#000; height:350px; border-radius:20px; padding:20px; margin-top:20px; border:1px solid #1f1f22; display:flex; align-items:center; justify-content:center; text-align:center;">
+                <p style="color:#555;">AI Analysis requires Tycoon Login.</p>
             </div>
-            <button onclick="askRXI()" style="margin-top:20px; background:var(--gold); color:#000;">GET AI ANALYSIS</button>
-        </div>
-
-        <div id="tab-settings" class="screen">
-            <h2>Tycoon Settings</h2>
-            <div class="stat-card" style="text-align:left; margin-top:20px;">
-                <p style="font-size:12px; margin-bottom:10px;">Daily Trade Limit</p>
-                <input type="range" min="1" max="10" value="3" style="width:100%;">
-                <p style="font-size:10px; color:var(--gold);">Suggestion: Max 3 Trades</p>
-            </div>
-            <div class="stat-card" style="text-align:left;">
-                <p style="font-size:12px;">Bio-Metric Lock</p>
-                <button style="background:#1a1a1d; color:#fff; font-size:12px; padding:10px; margin-top:10px;">Enable Fingerprint Access</button>
-            </div>
-            <button onclick="logout()" style="background:#333; margin-top:20px;">LOGOUT SYSTEM</button>
+            <button onclick="showLogin()" style="margin-top:20px; background:var(--gold); color:#000;">LOGIN TO USE AI</button>
         </div>
 
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('tab-dash', this)">📊<br>DASH</div>
             <div class="nav-item" onclick="switchTab('tab-pulse', this)">🎬<br>REELS</div>
             <div class="nav-item" onclick="switchTab('tab-ai', this)">🤖<br>RX-I</div>
-            <div class="nav-item" onclick="switchTab('tab-settings', this)">⚙️<br>SETUP</div>
+            <div class="nav-item" onclick="showLogin()">🆔<br>LOGIN</div>
         </nav>
     </div>
 
+    <div id="authOverlay">
+        <div style="background:var(--surface); padding:30px; border-radius:25px; width:100%; max-width:350px; text-align:center;">
+            <h2 style="margin-bottom:20px;">TYCOON LOGIN</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleLogin()">ENTER NETWORK</button>
+            <p onclick="hideLogin()" style="margin-top:20px; font-size:11px; color:#888; cursor:pointer;">Close (Continue as Guest)</p>
+        </div>
+    </div>
+
     <script>
-        // Firebase (Same Config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4Fscn8iSKaw",
-            authDomain: "red-x-global.firebaseapp.com",
-            projectId: "red-x-global",
-            databaseURL: "https://red-x-global-default-rtdb.firebaseio.com",
-            storageBucket: "red-x-global.firebasestorage.app",
-            messagingSenderId: "831636783622",
-            appId: "1:831636783622:web:92271605a0dc5150123987"
-        };
+        // FIREBASE SETUP (Same)
+        const firebaseConfig = { apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4Fscn8iSKaw", authDomain: "red-x-global.firebaseapp.com", projectId: "red-x-global", databaseURL: "https://red-x-global-default-rtdb.firebaseio.com", storageBucket: "red-x-global.firebasestorage.app", messagingSenderId: "831636783622", appId: "1:831636783622:web:92271605a0dc5150123987" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 1. RX-I Logic
-        function askRXI() {
-            const aiBox = document.getElementById('aiBox');
-            const res = ["RX-I: Market Trend is Neutral. Wait for 11:30 breakout.", "RX-I: VPA Analysis shows strong demand at 65k.", "RX-I Suggestion: Skip trading for the next 2 hours."];
-            const random = res[Math.floor(Math.random() * res.length)];
-            aiBox.innerHTML += `<p style="color:var(--accent); margin-top:15px; border-left:2px solid var(--gold); padding-left:10px;"><b>RX-I:</b> ${random}</p>`;
-            aiBox.scrollTop = aiBox.scrollHeight;
+        // 1. Optional Access Logic
+        function showLogin() { document.getElementById('authOverlay').style.display = 'flex'; }
+        function hideLogin() { document.getElementById('authOverlay').style.display = 'none'; }
+
+        function checkAuthAction() {
+            if(!auth.currentUser) {
+                alert("Bhai, post karne ke liye Login karna padega!");
+                showLogin();
+            } else {
+                alert("Upload system coming in Phase 3!");
+            }
         }
 
-        // 2. News Ticker Logic
-        function startNews() {
-            const items = ["Gold Price Surges +1.2%", "BTC Support found at $66,400", "New Tycoon member Raz verified.", "Forex: JPY weakening against USD."];
-            let i = 0;
-            setInterval(() => {
-                document.getElementById('ticker').innerText = "MARKET PULSE: " + items[i];
-                i = (i + 1) % items.length;
-            }, 5000);
-        }
-
-        // 3. Navigation
+        // 2. Navigation & News (Guest friendly)
         function switchTab(id, el) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -153,24 +117,25 @@
             el.classList.add('active');
         }
 
-        // 4. Auth & State
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                startNews();
-            } else {
-                document.getElementById('authScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-            }
-        });
+        function startNews() {
+            const items = ["Gold Price Surges +1.2%", "BTC Support at $66k", "Raz Verified Status: Active"];
+            let i = 0;
+            setInterval(() => {
+                document.getElementById('ticker').innerText = "MARKET PULSE: " + items[i];
+                i = (i + 1) % items.length;
+            }, 5000);
+        }
 
-        function handleAuth() {
+        window.onload = startNews;
+
+        function handleLogin() {
             const e = document.getElementById('email').value;
             const p = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+            auth.signInWithEmailAndPassword(e, p).then(() => {
+                hideLogin();
+                alert("Welcome Back, Tycoon!");
+            }).catch(err => alert(err.message));
         }
-        function logout() { auth.signOut(); }
     </script>
 </body>
 </html>
