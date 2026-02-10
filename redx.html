@@ -3,78 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RED X | Owned by Tycoon</title>
+    <title>RED X | Global Tycoon OS</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --bg: #0a0a0b; --surface: #161618; --accent: #ff003c; --gold: #d4af37; --text: #e0e0e0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); line-height: 1.6; }
+        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --gray: #888; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
-        nav { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; position: sticky; top: 0; background: var(--bg); z-index: 100; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        .card { background: var(--surface); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #222; }
-        
-        /* Firewall / Lock Screen */
-        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; line-height: 1; }
-        
-        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; outline: none; }
-        input:focus { border-color: var(--accent); }
-        button { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        button:hover { background: #cc0030; transform: scale(1.01); }
-        .gold-btn { background: var(--gold); color: #000; margin-top: 10px; }
+        /* Premium Navigation */
+        nav { padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f1f22; position: sticky; top: 0; background: rgba(10, 10, 11, 0.95); backdrop-filter: blur(10px); z-index: 1000; }
+        .logo { font-weight: 900; letter-spacing: 4px; font-size: 22px; color: #fff; }
+        .logo span { color: var(--accent); }
+        .badge { color: var(--gold); font-size: 10px; border: 1px solid var(--gold); padding: 3px 10px; border-radius: 50px; text-transform: uppercase; font-weight: 700; }
 
-        .project-item { padding: 12px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .project-item a { color: var(--gold); text-decoration: none; font-weight: bold; }
+        .container { padding: 30px 20px; max-width: 900px; margin: auto; }
+        .card { background: var(--surface); padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #1f1f22; transition: 0.3s ease; }
+        .card:hover { border-color: #333; }
+        
+        /* Global Firewall Overlay */
+        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .big-x { font-size: 180px; color: var(--accent); font-weight: 900; line-height: 1; text-shadow: 0 0 30px rgba(255, 0, 60, 0.5); }
+        
+        /* Typography & Inputs */
+        h3 { font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; }
+        p { color: var(--gray); font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); }
+        
+        /* Professional Buttons */
+        button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; border: 1px solid #333; color: var(--text); margin-top: 10px; }
+        .btn-gold { background: var(--gold); color: #000; margin-top: 10px; }
+
+        /* Project Showcase UI */
+        .project-grid { display: grid; gap: 15px; margin-top: 20px; }
+        .project-item { background: #000; padding: 15px; border-radius: 12px; border: 1px solid #1f1f22; display: flex; justify-content: space-between; align-items: center; }
+        .project-item span { font-weight: 600; color: var(--gold); }
+        .project-item a { color: #fff; text-decoration: none; font-size: 12px; border: 1px solid #333; padding: 5px 12px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <div id="lockScreen">
         <div class="big-x">X</div>
-        <h1 style="color:var(--accent); letter-spacing: 2px;">FIREWALL ACTIVE</h1>
-        <p style="margin: 15px 0; color: #888;">Dopamine limit cross kar di hai. Discipline hi Tycoon ki pehchan hai. Aaj ke liye trading band!</p>
-        <button onclick="unlock()" style="width: 250px;">I AM DISCIPLINED</button>
+        <h1 style="color:var(--accent); font-size: 32px; letter-spacing: 3px;">SYSTEM PROTOCOL ACTIVE</h1>
+        <p style="max-width: 500px;">Dopamine threshold exceeded. High-frequency trading detected. The system is now locked to preserve capital and psychological edge.</p>
+        <button onclick="unlock()" style="width: 280px;">TERMINATE LOCK</button>
     </div>
 
     <nav>
-        <div style="font-weight:900; letter-spacing:2px; font-size: 20px;">RED<span style="color:var(--accent)">X</span> :!</div>
-        <div style="color:var(--gold); font-size:12px; border: 1px solid var(--gold); padding: 2px 8px; border-radius: 4px;">FOUNDER MODE</div>
+        <div class="logo">RED<span>X</span> :!</div>
+        <div class="badge">Founder Access</div>
     </nav>
 
     <div class="container">
         <div class="card">
-            <h3 style="color:var(--accent)">🔱 Trade Firewall</h3>
-            <p style="font-size:12px; color:#888; margin-bottom: 10px;">3 Trades ke baad system auto-lock ho jayega.</p>
-            <input type="number" id="tradeCount" placeholder="Aaj kitne trades liye?">
-            <button onclick="checkTrades()">ACTIVATE GUARD</button>
+            <h3 style="color:var(--accent)">Capital Protection Firewall</h3>
+            <p>Automatic system lock after 3 execution cycles to ensure trading discipline.</p>
+            <input type="number" id="tradeCount" placeholder="Current Execution Count">
+            <button onclick="checkTrades()">Initialize Audit</button>
         </div>
 
         <div class="card">
-            <h3 style="color:var(--gold)">🔱 My Project Launchpad</h3>
-            <p style="font-size:12px; color:#888; margin-bottom: 10px;">Apne naye projects yahan list karo.</p>
-            <input type="text" id="projName" placeholder="Project Name (e.g. Rajmata Global)">
-            <input type="text" id="projLink" placeholder="GitHub / Live Link">
-            <button class="gold-btn" onclick="addProject()">PUBLISH TO MY CIRCLE</button>
-            <div id="projectList" style="margin-top:20px"></div>
+            <h3 style="color:var(--gold)">Global Project Launchpad</h3>
+            <p>Deploy and showcase your technological builds to the RED X network.</p>
+            <input type="text" id="projName" placeholder="Application Name (e.g. Rajmata Global)">
+            <input type="text" id="projLink" placeholder="Deployment URL (GitHub / Live)">
+            <button class="btn-gold" onclick="addProject()">Deploy to Network</button>
+            <div id="projectList" class="project-grid"></div>
         </div>
 
-        <div class="card" style="text-align: center;">
-            <h3 style="color:#eee">🔱 Red X Wisdom</h3>
-            <p id="wisdomText" style="font-style:italic; color:var(--gold); margin-top:10px; font-size: 1.1rem;">"Asli wealth trade se nahi, value create karne se aati hai."</p>
-            <p style="color: #555; font-size: 12px; margin-top: 5px;">— Red X :! Philosophy</p>
+        <div class="card" style="text-align: center; border-style: dashed;">
+            <h3 style="color:var(--gray)">Strategic Wisdom</h3>
+            <p id="wisdomText" style="font-style:italic; color:var(--text); font-size: 18px; margin-top:10px;">"True wealth is the byproduct of massive value creation."</p>
+            <p style="color: var(--accent); font-size: 10px; font-weight: 900; margin-top: 10px; letter-spacing: 2px;">RED X :! PHILOSOPHY</p>
         </div>
     </div>
 
     <script>
-        // Firewall Logic
+        // Firewall Protocol
         function checkTrades() {
             const count = document.getElementById('tradeCount').value;
             if(count && count > 3) {
                 document.getElementById('lockScreen').style.display = 'flex';
                 localStorage.setItem('redx_locked', 'true');
             } else if(count) {
-                alert("Control mein hai bhai! Agla trade soch-samajh kar.");
+                alert("Audit Complete: Strategic discipline maintained.");
             }
         }
 
@@ -84,7 +99,7 @@
             document.getElementById('tradeCount').value = '';
         }
 
-        // Launchpad Logic
+        // Deployment Logic
         function addProject() {
             const name = document.getElementById('projName').value;
             const link = document.getElementById('projLink').value;
@@ -92,7 +107,7 @@
                 const list = document.getElementById('projectList');
                 const item = document.createElement('div');
                 item.className = 'project-item';
-                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank">OPEN →</a>`;
+                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank">ACCESS DEPLOYMENT</a>`;
                 list.appendChild(item);
                 document.getElementById('projName').value = '';
                 document.getElementById('projLink').value = '';
