@@ -6,7 +6,7 @@
     <title>RED X | Raz Global Network</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff003c">
+    <meta name="theme-color" content="#ff003c">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -16,52 +16,55 @@
         :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); }
-        
-        /* Auth UI */
         #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: var(--surface); padding: 35px; border-radius: 20px; border: 1px solid #1f1f22; width: 100%; max-width: 380px; text-align: center; }
-        
-        /* Main UI */
-        #mainApp { display: none; padding: 20px; max-width: 800px; margin: auto; min-height: 100vh; }
+        #mainApp { display: none; padding: 20px; max-width: 800px; margin: auto; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--surface); padding: 20px; border-radius: 15px; border: 1px solid #1f1f22; text-align: center; }
         input, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
         button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        
         .pulse-msg { background:#121214; padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:10px; border: 1px solid #1f1f22; }
-        
-        /* Founder Credit Badge */
-        .founder-footer { text-align: center; padding: 40px 0; border-top: 1px solid #1f1f22; margin-top: 50px; }
-        .raz-badge { font-size: 12px; letter-spacing: 2px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; display: inline-block; font-weight: bold; text-transform: uppercase; }
+        .founder-footer { text-align: center; padding: 30px 0; border-top: 1px solid #1f1f22; margin-top: 40px; }
     </style>
 </head>
 <body>
 
     <div id="authScreen">
         <div class="auth-card">
-            <h1 style="margin-bottom:20px; letter-spacing:4px;">RED<span style="color:var(--accent)">X</span></h1>
+            <h1 style="letter-spacing:4px; margin-bottom:20px;">RED<span style="color:var(--accent)">X</span></h1>
             <input type="email" id="email" placeholder="Tycoon Email">
             <input type="password" id="password" placeholder="Secure Password">
             <button onclick="handleAuth('login')">ENTER NETWORK</button>
-            <p style="margin-top:15px; font-size:12px; color:var(--gold); cursor:pointer;" onclick="handleAuth('signup')">CREATE NEW MEMBER ID</p>
+            <p style="margin-top:15px; font-size:11px; color:var(--gold); cursor:pointer;" onclick="handleAuth('signup')">CREATE NEW MEMBER ID</p>
         </div>
     </div>
 
     <div id="mainApp">
-        <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding: 10px 0;">
+        <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
             <h2 style="letter-spacing:2px;">RED<span>X</span></h2>
-            <button onclick="logout()" style="width:auto; padding:8px 15px; font-size:11px; background:#222;">LOGOUT</button>
+            <button onclick="logout()" style="width:auto; padding:8px 15px; font-size:10px; background:#222;">LOGOUT</button>
         </nav>
 
-        <div style="background:var(--surface); padding:25px; border-radius:20px; border: 1px solid #1f1f22;">
-            <h3 style="color:var(--accent); margin-bottom:15px;">Global Pulse :!</h3>
-            <textarea id="thoughtInput" placeholder="Broadcast your strategic edge..."></textarea>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <p style="font-size: 10px; color: #888;">ACTIVE TRADES</p>
+                <h2 id="tradeCount" style="color: var(--gold);">492</h2>
+            </div>
+            <div class="stat-card">
+                <p style="font-size: 10px; color: #888;">STRATEGIC PLAN</p>
+                <h2 style="font-size: 16px; color: var(--accent);">PREMIUM</h2>
+            </div>
+        </div>
+
+        <div style="background:var(--surface); padding:20px; border-radius:20px; border: 1px solid #1f1f22;">
+            <h3 style="color:var(--accent); margin-bottom:12px;">Global Pulse :!</h3>
+            <textarea id="thoughtInput" placeholder="Broadcast your strategy..."></textarea>
             <button onclick="broadcastThought()">BROADCAST</button>
-            <div id="pulseFeed" style="margin-top:25px; max-height:500px; overflow-y:auto;"></div>
+            <div id="pulseFeed" style="margin-top:20px; max-height:400px; overflow-y:auto;"></div>
         </div>
 
         <div class="founder-footer">
-            <p style="font-size: 11px; color: #555; margin-bottom: 8px;">NETWORK ARCHITECT</p>
-            <div class="raz-badge">PLATFORM BY RAZ</div>
-            <p style="font-size: 10px; color: #444; margin-top: 10px;">&copy; 2026 GLOBAL TYCOON OS. ALL RIGHTS RESERVED.</p>
+            <div style="font-size: 12px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; display: inline-block; font-weight: bold;">PLATFORM BY RAZ</div>
         </div>
     </div>
 
@@ -83,11 +86,11 @@
         function handleAuth(type) {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            if(!email || !pass) return alert("Credentials Missing!");
+            if(!email || !pass) return alert("Fill data!");
             if(type === 'login') {
                 auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
             } else {
-                auth.createUserWithEmailAndPassword(email, pass).then(() => alert("Member ID Created!")).catch(e => alert(e.message));
+                auth.createUserWithEmailAndPassword(email, pass).then(() => alert("ID Created!")).catch(e => alert(e.message));
             }
         }
 
@@ -98,11 +101,16 @@
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 loadFeed();
+                updateTradeCount();
             } else {
                 document.getElementById('authScreen').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
             }
         });
+
+        function updateTradeCount() {
+            document.getElementById('tradeCount').innerText = Math.floor(Math.random() * (550 - 450) + 450);
+        }
 
         function broadcastThought() {
             const text = document.getElementById('thoughtInput').value;
@@ -127,7 +135,7 @@
                     div.className = 'pulse-msg';
                     div.innerHTML = `
                         <div style="font-size:9px; color:var(--gold); margin-bottom:5px;">${data.user.toUpperCase()} BROADCASTED • ${data.time}</div>
-                        <div style="font-size:14px;">${data.msg}</div>
+                        <div style="font-size:14px; color:#fff;">${data.msg}</div>
                     `;
                     feed.prepend(div);
                 });
@@ -136,4 +144,3 @@
     </script>
 </body>
 </html>
-
