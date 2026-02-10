@@ -3,120 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RED X | Global Tycoon OS</title>
-    <link rel="manifest" href="manifest.json">
-    
+    <title>RED X | Raz Global Network</title>
     <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --gray: #888; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); }
         
-        nav { padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f1f22; position: sticky; top: 0; background: rgba(10, 10, 11, 0.95); backdrop-filter: blur(10px); z-index: 1000; }
-        .logo { font-weight: 900; letter-spacing: 4px; font-size: 22px; color: #fff; }
-        .logo span { color: var(--accent); }
-        .badge { color: var(--gold); font-size: 10px; border: 1px solid var(--gold); padding: 3px 10px; border-radius: 50px; text-transform: uppercase; font-weight: 700; }
-
-        .container { padding: 30px 20px; max-width: 900px; margin: auto; }
-        .card { background: var(--surface); padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #1f1f22; transition: 0.3s ease; }
+        /* Auth UI */
+        #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: var(--surface); padding: 35px; border-radius: 20px; border: 1px solid #1f1f22; width: 100%; max-width: 380px; text-align: center; }
         
-        #lockScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
-        .big-x { font-size: 150px; color: var(--accent); font-weight: 900; line-height: 1; text-shadow: 0 0 30px rgba(255, 0, 60, 0.5); }
+        /* Main UI */
+        #mainApp { display: none; padding: 20px; max-width: 800px; margin: auto; min-height: 100vh; }
+        input, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
         
-        input, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; border: 1px solid #333; }
-        input:focus, textarea:focus { border-color: var(--accent); }
+        .pulse-msg { background:#121214; padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:10px; border: 1px solid #1f1f22; }
         
-        button { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
-        .btn-gold { background: var(--gold); color: #000; margin-top: 10px; }
-        
-        .project-item { background: #000; padding: 15px; border-radius: 12px; border: 1px solid #1f1f22; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        #pulseFeed { margin-top: 20px; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column-reverse; }
-        .pulse-msg { background:#000; padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:10px; border-top: 1px solid #1f1f22; }
+        /* Founder Credit Badge */
+        .founder-footer { text-align: center; padding: 40px 0; border-top: 1px solid #1f1f22; margin-top: 50px; }
+        .raz-badge { font-size: 12px; letter-spacing: 2px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; display: inline-block; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div id="lockScreen">
-        <div class="big-x">X</div>
-        <h1 style="color:var(--accent); font-size: 28px;">SYSTEM LOCK ACTIVE</h1>
-        <p style="margin: 20px 0; color: var(--gray);">Trade limit exceeded. Stay disciplined.</p>
-        <button onclick="unlock()" style="width: 250px;">UN-LOCK SYSTEM</button>
+    <div id="authScreen">
+        <div class="auth-card">
+            <h1 style="margin-bottom:20px; letter-spacing:4px;">RED<span style="color:var(--accent)">X</span></h1>
+            <input type="email" id="email" placeholder="Tycoon Email">
+            <input type="password" id="password" placeholder="Secure Password">
+            <button onclick="handleAuth('login')">ENTER NETWORK</button>
+            <p style="margin-top:15px; font-size:12px; color:var(--gold); cursor:pointer;" onclick="handleAuth('signup')">CREATE NEW MEMBER ID</p>
+        </div>
     </div>
 
-    <nav>
-        <div class="logo">RED<span>X</span> :!</div>
-        <div class="badge">Founder Access</div>
-    </nav>
+    <div id="mainApp">
+        <nav style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding: 10px 0;">
+            <h2 style="letter-spacing:2px;">RED<span>X</span></h2>
+            <button onclick="logout()" style="width:auto; padding:8px 15px; font-size:11px; background:#222;">LOGOUT</button>
+        </nav>
 
-    <div class="container">
-        <div class="card">
-            <h3 style="color:var(--accent); margin-bottom:15px;">Capital Protection Firewall</h3>
-            <input type="number" id="tradeCount" placeholder="Execution Count">
-            <button onclick="checkTrades()">Initialize Audit</button>
-        </div>
-
-        <div class="card">
-            <h3 style="color:var(--gold); margin-bottom:15px;">Global Project Launchpad</h3>
-            <input type="text" id="projName" placeholder="Project Name">
-            <input type="text" id="projLink" placeholder="Deployment URL">
-            <button class="btn-gold" onclick="addProject()">Deploy to Network</button>
-            <div id="projectList"></div>
-        </div>
-
-        <div class="card">
+        <div style="background:var(--surface); padding:25px; border-radius:20px; border: 1px solid #1f1f22;">
             <h3 style="color:var(--accent); margin-bottom:15px;">Global Pulse :!</h3>
-            <p style="font-size: 11px; color: var(--gray); margin-bottom: 10px;">Broadcast strategic opinions to the network.</p>
-            <textarea id="thoughtInput" placeholder="Enter your strategic thought..."></textarea>
-            <button onclick="broadcastThought()">Broadcast to Network</button>
-            <div id="pulseFeed"></div>
+            <textarea id="thoughtInput" placeholder="Broadcast your strategic edge..."></textarea>
+            <button onclick="broadcastThought()">BROADCAST</button>
+            <div id="pulseFeed" style="margin-top:25px; max-height:500px; overflow-y:auto;"></div>
+        </div>
+
+        <div class="founder-footer">
+            <p style="font-size: 11px; color: #555; margin-bottom: 8px;">NETWORK ARCHITECT</p>
+            <div class="raz-badge">PLATFORM BY RAZ</div>
+            <p style="font-size: 10px; color: #444; margin-top: 10px;">&copy; 2026 GLOBAL TYCOON OS. ALL RIGHTS RESERVED.</p>
         </div>
     </div>
 
     <script>
-        // Security Lock Logic
-        function checkTrades() {
-            const count = document.getElementById('tradeCount').value;
-            if(count && count > 3) {
-                document.getElementById('lockScreen').style.display = 'flex';
-            }
-        }
-        function unlock() {
-            document.getElementById('lockScreen').style.display = 'none';
-            document.getElementById('tradeCount').value = '';
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4Fscn8iSKaw",
+            authDomain: "red-x-global.firebaseapp.com",
+            projectId: "red-x-global",
+            databaseURL: "https://red-x-global-default-rtdb.firebaseio.com",
+            storageBucket: "red-x-global.firebasestorage.app",
+            messagingSenderId: "831636783622",
+            appId: "1:831636783622:web:92271605a0dc5150123987"
+        };
 
-        // Project Deployment Logic
-        function addProject() {
-            const name = document.getElementById('projName').value;
-            const link = document.getElementById('projLink').value;
-            if(name && link) {
-                const list = document.getElementById('projectList');
-                const item = document.createElement('div');
-                item.className = 'project-item';
-                item.innerHTML = `<span>${name}</span> <a href="${link}" target="_blank" style="color:var(--gold); text-decoration:none; font-weight:bold; font-size:12px;">ACCESS</a>`;
-                list.appendChild(item);
-                document.getElementById('projName').value = '';
-                document.getElementById('projLink').value = '';
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        function handleAuth(type) {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(!email || !pass) return alert("Credentials Missing!");
+            if(type === 'login') {
+                auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+            } else {
+                auth.createUserWithEmailAndPassword(email, pass).then(() => alert("Member ID Created!")).catch(e => alert(e.message));
             }
         }
 
-        // Real-time Feed Logic
+        function logout() { auth.signOut(); }
+
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                loadFeed();
+            } else {
+                document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+            }
+        });
+
         function broadcastThought() {
             const text = document.getElementById('thoughtInput').value;
-            const feed = document.getElementById('pulseFeed');
+            const user = auth.currentUser;
             if(text.trim() !== "") {
-                const msg = document.createElement('div');
-                msg.className = 'pulse-msg';
-                msg.innerHTML = `
-                    <div style="font-size:9px; color:var(--gold); margin-bottom:5px;">NETWORK BROADCAST</div>
-                    <div style="color:#fff; font-size:14px;">${text}</div>
-                `;
-                feed.appendChild(msg);
+                database.ref('thoughts').push({
+                    msg: text,
+                    user: user.email.split('@')[0],
+                    time: new Date().toLocaleTimeString()
+                });
                 document.getElementById('thoughtInput').value = '';
-                feed.scrollTop = feed.scrollHeight;
             }
+        }
+
+        function loadFeed() {
+            database.ref('thoughts').on('value', (snap) => {
+                const feed = document.getElementById('pulseFeed');
+                feed.innerHTML = "";
+                snap.forEach(child => {
+                    const data = child.val();
+                    const div = document.createElement('div');
+                    div.className = 'pulse-msg';
+                    div.innerHTML = `
+                        <div style="font-size:9px; color:var(--gold); margin-bottom:5px;">${data.user.toUpperCase()} BROADCASTED • ${data.time}</div>
+                        <div style="font-size:14px;">${data.msg}</div>
+                    `;
+                    feed.prepend(div);
+                });
+            });
         }
     </script>
 </body>
