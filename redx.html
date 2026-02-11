@@ -3,180 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REDX GLOBAL | BY RAZ</title>
+    <title>REDX OS | FULL ACCESS</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #ff0000; --gold: #D4AF37; --bg: #000; --panel: #0d0d0d; --text: #fff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-        /* BOOT SCREEN */
-        #splash {
+        /* --- 1. BOOT & ACCESS --- */
+        #boot-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; z-index: 9999;
         }
-        .boot-logo { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; color: var(--accent); text-shadow: 0 0 15px var(--accent); margin-bottom: 10px; }
-        .boot-bar { width: 180px; height: 2px; background: #222; position: relative; overflow: hidden; }
-        .boot-fill { width: 0%; height: 100%; background: var(--accent); animation: boot 2.5s forwards; }
-        @keyframes boot { to { width: 100%; } }
+        .boot-btn {
+            border: 2px solid var(--accent); background: transparent; color: var(--accent);
+            padding: 15px 30px; font-family: 'Orbitron'; cursor: pointer; font-size: 1.2rem;
+            box-shadow: 0 0 20px var(--accent); transition: 0.3s;
+        }
+        .boot-btn:hover { background: var(--accent); color: #000; }
 
-        /* MAIN APP LAYOUT */
-        .app-container { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 120px); gap: 10px; padding: 10px; visibility: hidden; }
+        /* --- 2. LAYOUT & NAVIGATION --- */
+        .screen-section { display: none; height: calc(100vh - 80px); padding: 10px; overflow-y: auto; animation: fadeIn 0.5s; }
+        .active-screen { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* REEL ENGINE (INSTA STYLE) */
-        .wire-feed { background: #000; border-radius: 15px; overflow-y: scroll; scroll-snap-type: y mandatory; height: 100%; position: relative; }
-        .wire-feed::-webkit-scrollbar { display: none; }
+        nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #080808; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-icon { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 0.6rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .nav-icon span { font-size: 1.2rem; margin-bottom: 2px; }
+        .nav-icon.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        /* --- 3. TERMINAL & OVERTRADING --- */
+        .ticker-top { background: #111; padding: 10px; border-bottom: 1px solid #333; white-space: nowrap; overflow: hidden; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--gold); }
         
-        .reel-frame { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #111; }
-        video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .risk-panel { background: rgba(255, 0, 0, 0.1); border: 1px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .risk-stat { font-size: 0.8rem; }
+        .risk-btn { background: var(--accent); border: none; color: white; padding: 5px 15px; cursor: pointer; font-weight: bold; }
 
-        .reel-info { position: absolute; bottom: 30px; left: 20px; z-index: 5; max-width: 80%; }
-        .reel-info b { color: var(--gold); font-size: 1rem; display: block; margin-bottom: 5px; }
-        .reel-info p { font-size: 0.8rem; line-height: 1.4; }
+        .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .asset-card { background: #151515; padding: 15px; border: 1px solid #333; text-align: center; border-radius: 5px; }
+        .asset-card h3 { font-size: 0.8rem; color: #888; }
+        .asset-card p { font-family: 'Orbitron'; font-size: 1.2rem; color: #00ff41; margin-top: 5px; }
 
-        .side-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; z-index: 5; }
-        .btn-circle { width: 50px; height: 50px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 1.2rem; }
-        .btn-circle:hover { background: var(--accent); transform: scale(1.1); }
+        /* --- 4. WIRE (REELS) --- */
+        .wire-container { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; border-radius: 10px; }
+        .wire-container::-webkit-scrollbar { display: none; }
+        .reel-unit { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; border-bottom: 2px solid #222; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .reel-overlay { position: absolute; bottom: 20px; left: 15px; z-index: 10; pointer-events: none; }
+        .reel-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; z-index: 20; }
+        .action-circle { width: 45px; height: 45px; background: rgba(0,0,0,0.6); border: 1px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 1.2rem; }
 
-        /* NEWS & SAVED SECTION */
-        .side-hub { background: var(--panel); border: 1px solid var(--accent); padding: 15px; overflow-y: auto; border-radius: 10px; }
-        .news-box { margin-bottom: 30px; }
-        .news-card { border-left: 3px solid var(--accent); padding: 10px; background: #111; margin-bottom: 10px; cursor: pointer; }
-        .news-card h5 { color: var(--gold); font-size: 0.85rem; margin-bottom: 5px; }
-        .news-card p { font-size: 0.7rem; color: #888; height: 0; overflow: hidden; transition: 0.3s; }
-        .news-card.active p { height: auto; margin-top: 10px; }
+        /* --- 5. AI ANALYST --- */
+        .chat-box { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; border: 1px solid #333; background: #111; padding: 10px; overflow-y: auto; margin-bottom: 10px; border-radius: 5px; }
+        .msg { padding: 8px 12px; margin-bottom: 8px; border-radius: 5px; max-width: 80%; font-size: 0.8rem; }
+        .msg.sys { background: rgba(255, 0, 0, 0.2); border-left: 2px solid var(--accent); align-self: flex-start; }
+        .msg.user { background: #333; align-self: flex-end; margin-left: auto; }
+        .chat-input-area { display: flex; gap: 5px; }
+        .chat-input { flex: 1; background: #222; border: 1px solid #444; color: white; padding: 10px; }
+        .chat-btn { background: var(--accent); border: none; color: white; padding: 0 20px; cursor: pointer; }
 
-        .saved-vault { border-top: 1px solid #333; padding-top: 20px; }
-        .vault-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #151515; padding: 8px; border-radius: 5px; font-size: 0.7rem; }
-
-        /* TICKER & NAV */
-        .ticker { background: #000; border-bottom: 2px solid var(--accent); padding: 10px; overflow: hidden; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--gold); }
-        .ticker-wrap { display: flex; animation: tick 40s linear infinite; gap: 60px; }
-        @keyframes tick { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        /* --- 6. NETWORK & SETTINGS --- */
+        .node-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .node-item { background: #111; padding: 15px; border-left: 3px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .node-item.online { border-color: #00ff41; }
+        .node-item.offline { border-color: var(--accent); }
         
-        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .nav-item { color: #555; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .nav-item.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        .setting-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #222; align-items: center; }
+        .toggle { width: 40px; height: 20px; background: #333; border-radius: 20px; position: relative; }
+        .toggle::after { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:0.3s; }
+        .toggle.on { background: var(--accent); }
+        .toggle.on::after { left: 22px; }
+
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <div class="boot-logo">REDX</div>
-        <p style="color:var(--gold); font-size:0.6rem; letter-spacing:4px; margin-bottom:15px;">DIRECTED BY RAZ</p>
-        <div class="boot-bar"><div class="boot-fill"></div></div>
+    <div id="boot-screen">
+        <h1 style="font-family:'Orbitron'; color:var(--accent); font-size:3rem; margin-bottom:10px;">REDX OS</h1>
+        <p style="color:#666; margin-bottom:30px; letter-spacing:2px;">DIRECTED BY RAZ</p>
+        <button class="boot-btn" onclick="systemStart()">INITIALIZE SYSTEMS</button>
     </div>
 
-    <div class="ticker">
-        <div class="ticker-wrap">
-            <span>BITCOIN: <b id="p-btc" style="color:#00ff41">$---</b></span>
-            <span>GOLD: <b style="color:#00ff41">$2,044.20</b></span>
-            <span>NIFTY 50: <b style="color:#00ff41">21,840.10</b></span>
-            <span>DXY: <b style="color:var(--accent)">104.15</b></span>
-            <span>USDT/INR: <b style="color:var(--gold)">₹91.45</b></span>
+    <div id="tab-terminal" class="screen-section">
+        <div class="ticker-top">
+            BTC: <span style="color:#00ff41">$64,520</span> &nbsp;|&nbsp; 
+            GOLD: <span style="color:#00ff41">$2,145</span> &nbsp;|&nbsp; 
+            NIFTY: <span style="color:var(--accent)">21,900</span>
+        </div>
+
+        <br>
+        <div class="risk-panel">
+            <div>
+                <b style="color:var(--accent)">⚠️ RISK PROTOCOL</b>
+                <div class="risk-stat">Trades: <span id="trade-count" style="color:white; font-size:1.2rem;">0</span> / <input type="number" id="trade-limit" value="5" style="width:40px; background:#000; color:var(--accent); border:none;"></div>
+            </div>
+            <button class="risk-btn" onclick="addTrade()">LOG TRADE</button>
+        </div>
+
+        <div class="asset-grid">
+            <div class="asset-card"><h3>BITCOIN</h3><p id="p-btc">$---</p></div>
+            <div class="asset-card"><h3>ETHEREUM</h3><p id="p-eth">$---</p></div>
+            <div class="asset-card"><h3>SOLANA</h3><p id="p-sol">$---</p></div>
+            <div class="asset-card"><h3>USDT/INR</h3><p style="color:var(--gold)">₹91.45</p></div>
+        </div>
+        
+        <div style="margin-top:20px; padding:15px; background:#111; border:1px solid #333;">
+            <h4 style="color:var(--gold)">SAVED VAULT</h4>
+            <div id="vault-list" style="font-size:0.7rem; color:#666; margin-top:10px;">No saved intelligence yet.</div>
         </div>
     </div>
 
-    <div class="app-container" id="mainApp">
-        <div class="wire-feed" id="feed">
-            <div class="reel-frame">
-                <video loop muted playsinline autoplay>
-                    <source src="https://v1.shared-video.com/v/17154/f5352c4a.mp4" type="video/mp4">
-                </video>
-                <div class="reel-info">
-                    <b>@RAZ_DIRECTOR</b>
-                    <p>Trading is the ultimate game of patience. Are you ready? #REDX</p>
+    <div id="tab-wire" class="screen-section">
+        <div class="wire-container" id="video-scroller">
+            <div class="reel-unit">
+                <video id="vid1" loop playsinline><source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4"></video>
+                <div class="reel-overlay">
+                    <h3 style="color:var(--gold)">@RAZ_DIRECTOR</h3>
+                    <p style="font-size:0.8rem;">Volatility is an opportunity. Stay focused. #REDX</p>
                 </div>
-                <div class="side-actions">
-                    <div class="btn-circle">❤️</div>
-                    <div class="btn-circle" onclick="saveToVault('Trading Patience Video')">🔖</div>
-                    <div class="btn-circle">🔗</div>
+                <div class="reel-actions">
+                    <div class="action-circle">❤️</div>
+                    <div class="action-circle" onclick="saveToVault('Volatility Intel')">🔖</div>
                 </div>
             </div>
-            <div class="reel-frame">
-                <video loop muted playsinline>
-                    <source src="https://v1.shared-video.com/v/17154/e2e5e4d2.mp4" type="video/mp4">
-                </video>
-                <div class="reel-info">
-                    <b>@RAZ_DIRECTOR</b>
-                    <p>Global liquidity is shifting. Track the smart money. #ProjectREDX</p>
+            <div class="reel-unit">
+                <video id="vid2" loop playsinline><source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4"></video>
+                <div class="reel-overlay">
+                    <h3 style="color:var(--gold)">@RAZ_DIRECTOR</h3>
+                    <p style="font-size:0.8rem;">Global Industrial Shift. Energy sector booming. #Empire</p>
                 </div>
-                <div class="side-actions">
-                    <div class="btn-circle">❤️</div>
-                    <div class="btn-circle" onclick="saveToVault('Liquidity Shift Intel')">🔖</div>
-                    <div class="btn-circle">🔗</div>
+                <div class="reel-actions">
+                    <div class="action-circle">❤️</div>
+                    <div class="action-circle" onclick="saveToVault('Industrial Shift')">🔖</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="side-hub">
-            <div class="news-box">
-                <h3 style="color:var(--accent); font-size:0.8rem; margin-bottom:15px; letter-spacing:1px;">INTEL WIRE</h3>
-                <div class="news-card" onclick="this.classList.toggle('active')">
-                    <h5>Global Markets Bracing for Impact</h5>
-                    <p>Trading discipline is key as we detect massive volatility in the Asian sessions. Stay focused on your stop-losses.</p>
-                </div>
-                <div class="news-card" onclick="this.classList.toggle('active')">
-                    <h5>Bitcoin Spot ETF Inflows Surpass Expectations</h5>
-                    <p>Record-breaking $800M inflow in a single day. Institutional demand is now the primary driver of price action.</p>
-                </div>
+    <div id="tab-ai" class="screen-section">
+        <h3 style="color:var(--accent); border-bottom:1px solid #333; padding-bottom:10px;">AI STRATEGIST</h3>
+        <div class="chat-box">
+            <div class="chat-log" id="chat-log">
+                <div class="msg sys">System Online. How can I assist you with the market today, Sir?</div>
             </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="user-input" placeholder="Ask about trends...">
+                <button class="chat-btn" onclick="sendAI()">SEND</button>
+            </div>
+        </div>
+    </div>
 
-            <div class="saved-vault">
-                <h3 style="color:var(--gold); font-size:0.8rem; margin-bottom:15px;">SAVED VAULT 🔖</h3>
-                <div id="vault-list">
-                    <p style="color:#444; font-size:0.6rem;">No saved items yet.</p>
-                </div>
+    <div id="tab-network" class="screen-section">
+        <h3 style="color:var(--gold); margin-bottom:15px;">GLOBAL EMPIRE NODES</h3>
+        <div class="node-list">
+            <div class="node-item online">
+                <span>📍 KHAJURAHO HQ</span> <span style="color:#00ff41; font-size:0.7rem;">ONLINE</span>
             </div>
+            <div class="node-item online">
+                <span>📍 MUMBAI SERVER</span> <span style="color:#00ff41; font-size:0.7rem;">SYNCED</span>
+            </div>
+            <div class="node-item offline">
+                <span>📍 LONDON HUB</span> <span style="color:var(--accent); font-size:0.7rem;">OFFLINE</span>
+            </div>
+            <div class="node-item online">
+                <span>📍 DUBAI CRYPTO</span> <span style="color:#00ff41; font-size:0.7rem;">ACTIVE</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-settings" class="screen-section">
+        <h3 style="margin-bottom:20px;">SYSTEM CONFIG</h3>
+        <div class="setting-row">
+            <span>Dark Mode</span> <div class="toggle on"></div>
+        </div>
+        <div class="setting-row">
+            <span>Trade Notifications</span> <div class="toggle on"></div>
+        </div>
+        <div class="setting-row">
+            <span>Audio Feedback</span> <div class="toggle"></div>
+        </div>
+        <div style="margin-top:30px; border:1px solid var(--accent); padding:10px; color:var(--accent); text-align:center;">
+            LOGOUT TERMINAL
         </div>
     </div>
 
     <nav>
-        <div class="nav-item active">Terminal</div>
-        <div class="nav-item">X-WIRE</div>
-        <div class="nav-item">AI Analyst</div>
-        <div class="nav-item">Network</div>
-        <div class="nav-item">Settings</div>
+        <div class="nav-icon active" onclick="switchTab('terminal', this)"><span>📊</span>Terminal</div>
+        <div class="nav-icon" onclick="switchTab('wire', this)"><span>🎬</span>Wire</div>
+        <div class="nav-icon" onclick="switchTab('ai', this)"><span>🤖</span>AI</div>
+        <div class="nav-icon" onclick="switchTab('network', this)"><span>🌍</span>Network</div>
+        <div class="nav-icon" onclick="switchTab('settings', this)"><span>⚙️</span>Settings</div>
     </nav>
 
     <script>
-        // BOOTING ENGINE
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('splash').style.display = 'none';
-                document.getElementById('mainApp').style.visibility = 'visible';
-            }, 3000);
-        };
-
-        // SAVE LOGIC
-        function saveToVault(title) {
-            const list = document.getElementById('vault-list');
-            if(list.innerText.includes('No saved items')) list.innerHTML = '';
-            const item = document.createElement('div');
-            item.className = 'vault-item';
-            item.innerHTML = `<span>▶</span> ${title}`;
-            list.appendChild(item);
-            alert("Added to Saved Vault!");
+        // --- 1. BOOT LOGIC ---
+        function systemStart() {
+            document.getElementById('boot-screen').style.display = 'none';
+            switchTab('terminal', document.querySelector('.nav-icon'));
         }
 
-        // PRICE SYNC
-        async function fetchLive() {
+        // --- 2. NAVIGATION LOGIC ---
+        function switchTab(tabName, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.screen-section').forEach(el => el.classList.remove('active-screen'));
+            // Show target section
+            document.getElementById('tab-' + tabName).classList.add('active-screen');
+            
+            // Update Nav Icons
+            document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            // Special Case: Pause Videos if leaving 'Wire'
+            const videos = document.querySelectorAll('video');
+            if (tabName !== 'wire') {
+                videos.forEach(v => v.pause());
+            } else {
+                // Try to play first video if entering wire
+                document.getElementById('vid1').play().catch(e=>{});
+            }
+        }
+
+        // --- 3. OVERTRADING LOGIC ---
+        let trades = 0;
+        function addTrade() {
+            const limit = document.getElementById('trade-limit').value;
+            trades++;
+            document.getElementById('trade-count').innerText = trades;
+            
+            if(trades >= limit) {
+                document.querySelector('.risk-panel').style.background = "red";
+                alert("⛔ CRITICAL: OVERTRADING DETECTED. STOP TRADING IMMEDIATELY.");
+            }
+        }
+
+        // --- 4. VAULT LOGIC ---
+        function saveToVault(name) {
+            const list = document.getElementById('vault-list');
+            if(list.innerText.includes('No saved')) list.innerHTML = '';
+            list.innerHTML += `<div style="padding:5px; border-bottom:1px solid #333;">▶ ${name}</div>`;
+            alert("Added to Vault.");
+        }
+
+        // --- 5. AI CHAT LOGIC ---
+        function sendAI() {
+            const input = document.getElementById('user-input');
+            const log = document.getElementById('chat-log');
+            if(input.value.trim() === "") return;
+
+            // User msg
+            log.innerHTML += `<div class="msg user">${input.value}</div>`;
+            
+            // Mock System Reply
+            setTimeout(() => {
+                const replies = [
+                    "Analyzing market depth... Trend is Bullish.",
+                    "Volume spike detected in BTC pairs.",
+                    "Risk parameters are stable.",
+                    "Khajuraho Node reports optimal latency."
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                log.innerHTML += `<div class="msg sys">${randomReply}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }, 1000);
+            
+            input.value = "";
+        }
+
+        // --- 6. DATA SYNC ---
+        async function fetchPrices() {
             try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT"]');
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
                 const data = await res.json();
-                document.getElementById('p-btc').innerText = '$' + Math.round(data[0].price).toLocaleString();
+                document.getElementById('p-btc').innerText = '$' + parseFloat(data[0].price).toFixed(2);
+                document.getElementById('p-eth').innerText = '$' + parseFloat(data[1].price).toFixed(2);
+                document.getElementById('p-sol').innerText = '$' + parseFloat(data[2].price).toFixed(2);
             } catch(e) {}
         }
-        setInterval(fetchLive, 3000); fetchLive();
+        setInterval(fetchPrices, 3000);
 
-        // SCROLL AUTOPLAY FIX
-        const feed = document.getElementById('feed');
-        feed.addEventListener('scroll', () => {
-            const videos = document.querySelectorAll('video');
-            videos.forEach(v => {
+        // --- 7. SCROLL VIDEO HANDLER ---
+        document.getElementById('video-scroller').addEventListener('scroll', () => {
+            document.querySelectorAll('video').forEach(v => {
                 const rect = v.getBoundingClientRect();
-                if (rect.top >= 0 && rect.bottom <= window.innerHeight) v.play();
+                if(rect.top >= 0 && rect.bottom <= window.innerHeight) v.play();
                 else v.pause();
             });
         });
