@@ -3,64 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rajmata Mall | The Pinnacle of Indian Garments</title>
+    
+    <title>Rajmata Mall | Khajuraho's Premium Garment Showroom</title>
+    <meta name="description" content="Official site of Rajmata Mall. Led by Sunil Mishra and Raz Shukla. Explore premium Indian garments and luxury fashion in Khajuraho.">
+    <meta name="keywords" content="Rajmata Mall, Khajuraho, Sunil Mishra, Raz Shukla, Indian Garments, Luxury Fashion Khajuraho, Rajmata Global">
+    <meta name="author" content="Raz Shukla">
+
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --bg: #050505; --text: #f4f4f4; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); scroll-behavior: smooth; overflow-x: hidden; }
 
-        /* Navigation */
         nav { position: fixed; width: 100%; padding: 25px 5%; display: flex; justify-content: space-between; background: rgba(0,0,0,0.95); z-index: 1000; border-bottom: 1px solid var(--gold); }
         .logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; }
 
-        /* Massive Scrolling Sections */
-        section { height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 15%; text-align: center; background-size: cover; background-position: center; background-attachment: fixed; position: relative; border-bottom: 1px solid #222; }
-        
-        h2 { font-family: 'Playfair Display', serif; font-size: 3.5rem; color: var(--gold); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 3px; }
-        p { font-size: 1.15rem; line-height: 1.9; max-width: 850px; background: rgba(0,0,0,0.75); padding: 35px; border-radius: 2px; border: 1px solid rgba(212, 175, 55, 0.2); }
+        section { min-height: 100vh; padding: 150px 10%; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid #222; position: relative; }
+        h2 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 8vw, 5rem); color: var(--gold); margin-bottom: 30px; text-transform: uppercase; line-height: 1.1; }
+        p { font-size: 1.3rem; line-height: 1.8; color: #ccc; max-width: 800px; margin-bottom: 20px; }
+        b { color: var(--gold); }
 
-        /* Background Images for Brand Story */
-        .sc-1 { background-image: url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1920'); }
-        .sc-2 { background-image: url('https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1920'); }
-        .sc-3 { background-image: url('https://images.unsplash.com/photo-1621259182978-fbf93132d53d?q=80&w=1920'); }
-        .sc-4 { background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1920'); }
-        .sc-5 { background-image: url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1920'); }
+        .sc-1 { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80') center/cover; }
+        .footer { padding: 50px; text-align: center; border-top: 1px solid var(--gold); font-size: 0.9rem; letter-spacing: 2px; color: var(--gold); }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo">RAJMATA MALL</div>
-        <div style="color: var(--gold); font-size: 0.8rem; letter-spacing: 1px;">DELHI | KHAJURAHO | NATIONWIDE</div>
     </nav>
 
     <section class="sc-1">
-        <h2>The Rajmata Standard</h2>
-        <p>Rajmata Mall stands as the definitive leader in the Delhi garment industry. For years, we have provided a sanctuary of style for those who seek the finest sarees and premium garments. Our brand is built on the foundation of trust, elegance, and the timeless beauty of Indian textiles.</p>
+        <h2>The Pinnacle of Indian Garments</h2>
+        <p>A legacy built on trust, quality, and the timeless beauty of Indian textiles. Welcome to the world of <b>Rajmata Mall</b>.</p>
     </section>
 
-    <section class="sc-2">
-        <h2>Unrivaled Craftsmanship</h2>
-        <p>Every piece of fabric at Rajmata Mall undergoes a rigorous selection process. We specialize in intricate hand-weaving and embroidery that reflects the soul of our artisans. From bridal splendor to everyday elegance, our quality remains the gold standard for the modern Indian family.</p>
-    </section>
-
-    <section class="sc-3">
-        <h2>The Spirit of Khajuraho</h2>
-        <p>Our aesthetic inspiration flows from the sacred stones of <b>Khajuraho</b>. By translating ancient temple motifs into contemporary fashion, Rajmata Mall preserves the cultural heartbeat of India. We don't just sell clothes; we offer a piece of our nation's glorious architectural history.</p>
-    </section>
-
-    <section class="sc-4">
-        <h2>50+ Showrooms Across India</h2>
-        <p>With a massive physical presence of over 50 showrooms, Rajmata Mall has brought the luxury of Delhi to every corner of the country. Our expansion is a testament to the demand for our premium quality and our commitment to serving the Indian public with excellence.</p>
-    </section>
-
-    <section class="sc-5">
+    <section>
         <h2>The Visionary Core</h2>
-        <p>The success of this empire is driven by the strategic partnership of <b>Mr. Sunil Mishra</b> and <b>Mr. Raz Shukla</b>. While Mr. Mishra ensures operational perfection across our national network, Mr. Shukla provides the industrialist vision that fuels our growth. Together, they have turned a dream into one of the country's most respected garment brands.</p>
+        <p>The success of this empire is driven by the strategic partnership of <b>Mr. Sunil Mishra</b> and <b>Mr. Raz Shukla</b>. While Mr. Mishra ensures operational perfection across our national network, Mr. Shukla provides the industrialist vision that fuels our growth.</p>
     </section>
 
-    <section style="background: #111;">
-        <h2>Global Digital Presence</h2>
+    <section>
+        <h2>The Spirit of Khajuraho</h2>
+        <p>Our aesthetic inspiration flows from the sacred stones of <b>Khajuraho</b>. By translating ancient temple motifs into contemporary fashion, Rajmata Mall preserves the cultural heartbeat of India.</p>
+    </section>
 
-        <p>Embracing the future, Rajmata Mall is a proud partner with
+    <section>
+        <h2>50+ Showrooms Across India</h2>
+        <p>With a massive physical presence of over 50 showrooms, Rajmata Mall has brought luxury fashion to every corner of the country. We don't just sell clothes; we offer a piece of our nation's glorious history.</p>
+    </section>
+
+    <div class="footer">
+        © 2024 RAJMATA GLOBAL NETWORK | DIRECTED BY RAZ SHUKLA
+    </div>
+
+</body>
+</html>
