@@ -10,133 +10,131 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-        /* Real-Time Ticker */
-        .top-ticker { background: #000; border-bottom: 2px solid var(--accent); padding: 8px 0; overflow: hidden; display: flex; white-space: nowrap; }
-        .ticker-move { display: flex; animation: scrollText 30s linear infinite; gap: 50px; }
+        /* Top Ticker */
+        .top-ticker { background: #000; border-bottom: 2px solid var(--accent); padding: 10px; overflow: hidden; display: flex; white-space: nowrap; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; }
+        .ticker-move { display: flex; animation: scrollText 40s linear infinite; gap: 60px; }
         @keyframes scrollText { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-        .tick-item { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--gold); }
-        .tick-val { color: #00ff41; margin-left: 5px; }
+        .tick-item span { color: #00ff41; margin-left: 5px; }
 
-        /* Layout Structure */
-        .main-wrapper { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 110px); gap: 5px; padding: 5px; }
+        /* Dashboard Layout */
+        .main-wrapper { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 120px); gap: 10px; padding: 10px; }
         .terminal-core { background: var(--panel); border: 1px solid #222; overflow-y: auto; padding: 20px; }
-        .intel-wire { background: #050505; border: 1px solid var(--accent); overflow-y: auto; padding: 15px; }
+        .intel-wire { background: #050505; border: 1px solid var(--accent); padding: 15px; overflow-y: auto; }
 
-        /* Asset Display */
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .asset-box { background: #151515; padding: 15px; border-radius: 2px; border: 1px solid #252525; text-align: center; }
-        .asset-box h4 { font-size: 0.7rem; color: #888; margin-bottom: 8px; letter-spacing: 1px; }
-        .asset-box p { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: bold; }
+        /* Multi-Asset Display */
+        .asset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .asset-box { background: #151515; padding: 15px; border: 1px solid #333; text-align: center; }
+        .asset-box h4 { font-size: 0.65rem; color: #888; margin-bottom: 5px; letter-spacing: 1px; }
+        .asset-box p { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: bold; color: #00ff41; }
 
-        /* REDX-WIRE (The Video Feed) */
-        .wire-container { height: 400px; background: #000; border: 1px dashed #333; margin-top: 20px; display: flex; flex-direction: column; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .wire-video { height: 100%; min-height: 400px; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #080808; border-bottom: 1px solid #111; }
-        .video-meta { position: absolute; bottom: 20px; left: 20px; border-left: 2px solid var(--accent); padding-left: 10px; text-align: left; }
+        /* Overtrading Protocol Section */
+        .risk-tool { background: rgba(255,0,0,0.1); border: 1px solid var(--accent); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .risk-input { background: #000; border: 1px solid #444; color: white; padding: 5px; width: 60px; }
+
+        /* REDX-WIRE VIDEO ENGINE (Vertical Feed) */
+        .wire-engine { height: 500px; background: #000; border: 1px solid #333; margin-top: 15px; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .wire-clip { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; }
+        .wire-clip iframe { width: 100%; height: 100%; pointer-events: none; }
+        .clip-overlay { position: absolute; bottom: 20px; left: 20px; z-index: 10; border-left: 3px solid var(--accent); padding-left: 15px; background: rgba(0,0,0,0.6); width: 80%; }
 
         /* News Cards */
-        .news-card { background: rgba(255,0,0,0.03); border-left: 3px solid var(--accent); padding: 12px; margin-bottom: 12px; transition: 0.3s; cursor: pointer; }
-        .news-card:hover { background: rgba(255,0,0,0.1); }
-        .news-card h5 { font-size: 0.9rem; margin-bottom: 5px; line-height: 1.4; }
-        .news-card small { color: var(--gold); font-size: 0.65rem; }
+        .news-card { border-left: 3px solid var(--accent); padding: 12px; margin-bottom: 12px; background: #111; }
+        .news-card small { color: var(--gold); font-size: 0.6rem; }
 
-        /* Bottom Navbar */
-        nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #000; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; z-index: 999; }
-        .nav-btn { color: #555; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-btn.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        /* Navigation */
+        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; }
+        .nav-btn { color: #555; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .nav-btn.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div class="top-ticker">
         <div class="ticker-move" id="live-ticker">
-            <div class="tick-item">GOLD: <span class="tick-val">$2,034.50</span></div>
-            <div class="tick-item">SILVER: <span class="tick-val">$22.95</span></div>
-            <div class="tick-item">CRUDE OIL: <span class="tick-val">$77.10</span></div>
-            <div class="tick-item">EUR/USD: <span class="tick-val">1.0821</span></div>
-            <div class="tick-item">DXY: <span class="tick-val">104.15</span></div>
-            <div class="tick-item">US 10Y: <span class="tick-val">4.21%</span></div>
+            <div class="tick-item">GOLD: <span>$2,034.50</span></div>
+            <div class="tick-item">DXY: <span>104.15</span></div>
+            <div class="tick-item">EUR/USD: <span>1.0821</span></div>
+            <div class="tick-item">CRUDE OIL: <span>$77.10</span></div>
+            <div class="tick-item">NIFTY 50: <span>21,780.45</span></div>
         </div>
     </div>
 
     <div class="main-wrapper">
         <div class="terminal-core">
-            <h2 style="color: var(--gold); margin-bottom: 20px; font-size: 1.1rem; letter-spacing: 3px;">GLOBAL DATA TERMINAL</h2>
+            <h2 style="color: var(--gold); letter-spacing: 3px; font-size: 1rem; margin-bottom: 15px;">GLOBAL DATA TERMINAL</h2>
             
-            <div class="grid-4">
-                <div class="asset-box"><h4>BITCOIN</h4><p id="btc-live" style="color:#00ff41;">$00,000.00</p></div>
-                <div class="asset-box"><h4>ETHEREUM</h4><p id="eth-live" style="color:#00ff41;">$0,000.00</p></div>
-                <div class="asset-box"><h4>SOLANA</h4><p id="sol-live" style="color:#00ff41;">$00.00</p></div>
+            <div class="asset-grid">
+                <div class="asset-box"><h4>BITCOIN</h4><p id="btc-val">$00,000</p></div>
+                <div class="asset-box"><h4>ETHEREUM</h4><p id="eth-val">$0,000</p></div>
+                <div class="asset-box"><h4>SOLANA</h4><p id="sol-val">$00.00</p></div>
                 <div class="asset-box"><h4>USDT/INR</h4><p style="color:var(--gold)">₹91.45</p></div>
             </div>
 
-            <h3 style="font-size: 0.8rem; border-bottom: 1px solid #222; padding-bottom: 10px;">REDX-WIRE (EXCLUSIVE FEED)</h3>
-            <div class="wire-container" id="wire-feed">
-                <div class="wire-video">
-                    <div class="video-meta">
-                        <p style="font-weight:bold; color:var(--gold);">@RAZ_DIRECTOR</p>
-                        <p style="font-size:0.8rem;">Mastering the Market: Discipline is the only way. #ProjectREDX</p>
-                    </div>
-                    <p style="color:#222; font-weight:bold; font-size: 3rem;">REDX CLIP</p>
+            <div class="risk-tool">
+                <h3 style="font-size: 0.8rem; margin-bottom: 10px; color: var(--accent);">⚠️ OVERTRADING PROTOCOL (ACTIVE)</h3>
+                <div style="font-size: 0.8rem; display: flex; gap: 20px;">
+                    <div>Max Daily Trades: <input type="number" class="risk-input" value="5" id="maxTrades"></div>
+                    <div>Trades Done: <span id="currentTrades" style="font-weight:bold; color:var(--gold);">0</span></div>
+                    <button onclick="logTrade()" style="background:var(--accent); color:white; border:none; padding: 2px 10px; cursor:pointer;">LOG TRADE</button>
                 </div>
-                <div class="wire-video">
-                    <div class="video-meta">
-                        <p style="font-weight:bold; color:var(--gold);">@RAZ_DIRECTOR</p>
-                        <p style="font-size:0.8rem;">Global Expansion Plan: 50+ New Hubs Indexing. #Industrialist</p>
-                    </div>
-                    <p style="color:#222; font-weight:bold; font-size: 3rem;">REDX CLIP</p>
+            </div>
+
+            <h3 style="font-size: 0.8rem; border-bottom: 1px solid #333; padding-bottom: 5px;">REDX-WIRE (LIVE BUSINESS FEED)</h3>
+            <div class="wire-engine" id="wire-feed">
+                <div class="wire-clip">
+                    <iframe src="https://www.youtube.com/embed/P6M68L79q2s?autoplay=1&mute=1&loop=1&playlist=P6M68L79q2s&controls=0&modestbranding=1" frameborder="0"></iframe>
+                    <div class="clip-overlay"><p style="font-weight:bold; color:var(--gold);">@RAZ_DIRECTOR</p><p style="font-size:0.8rem;">Trading is 90% Psychology. Stay Focused. #REDX</p></div>
+                </div>
+                <div class="wire-clip">
+                    <iframe src="https://www.youtube.com/embed/v_79XwXWf0g?autoplay=1&mute=1&loop=1&playlist=v_79XwXWf0g&controls=0&modestbranding=1" frameborder="0"></iframe>
+                    <div class="clip-overlay"><p style="font-weight:bold; color:var(--gold);">@RAZ_DIRECTOR</p><p style="font-size:0.8rem;">World Economy Update: The shift to Digital Assets. #Industrialist</p></div>
                 </div>
             </div>
         </div>
 
         <div class="intel-wire">
-            <h3 style="color: var(--accent); font-size: 0.85rem; margin-bottom: 20px; letter-spacing: 1px;">LIVE INTEL WIRE</h3>
-            <div id="news-container">
-                <div class="news-card">
-                    <small>14:35 • REUTERS</small>
-                    <h5>Wall Street futures rise as tech earnings beat expectations.</h5>
-                </div>
-                <div class="news-card">
-                    <small>14:20 • BLOOMBERG</small>
-                    <h5>Gold holds steady near record highs on safe-haven demand.</h5>
-                </div>
-                <div class="news-card">
-                    <small>14:05 • CNBC</small>
-                    <h5>Japan's Nikkei hits 34-year high; Nikkei 225 index crosses 38k.</h5>
-                </div>
-                <div class="news-card">
-                    <small>13:50 • REDX EXCLUSIVE</small>
-                    <h5>Massive liquidity shift detected in Crypto Spot ETFs.</h5>
-                </div>
+            <h3 style="color: var(--accent); font-size: 0.8rem; margin-bottom: 15px;">GLOBAL INTEL WIRE</h3>
+            <div id="news-wire">
+                <div class="news-card"><small>14:40 • REUTERS</small><h5>Nvidia surges as AI demand hits new peak.</h5></div>
+                <div class="news-card"><small>14:25 • BLOOMBERG</small><h5>Oil stabilizes near $78 as tensions ease in Middle East.</h5></div>
+                <div class="news-card"><small>14:10 • CNBC</small><h5>Bitcoin dominance reaches 52% as institutional buying grows.</h5></div>
+                <div class="news-card"><small>13:55 • REDX INTEL</small><h5>Global Network Expansion: Khajuraho Hub Online.</h5></div>
             </div>
         </div>
     </div>
 
     <nav>
         <div class="nav-btn active">Terminal</div>
-        <div class="nav-btn" onclick="alert('Login Required for Interaction')">REDX-WIRE</div>
-        <div class="nav-btn" onclick="alert('Account Verification Needed')">AI ANALYST</div>
+        <div class="nav-btn" onclick="alert('Verify Account to Upload')">REDX-WIRE</div>
+        <div class="nav-btn" onclick="alert('AI Analyst Connecting...')">AI ANALYST</div>
         <div class="nav-btn">Network</div>
         <div class="nav-btn">Settings</div>
     </nav>
 
     <script>
-        // Real-Time Crypto Data Injection
-        async function fetchMarketData() {
-            try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-                const data = await response.json();
-                
-                document.getElementById('btc-live').innerText = '$' + parseFloat(data[0].price).toLocaleString(undefined, {minimumFractionDigits: 2});
-                document.getElementById('eth-live').innerText = '$' + parseFloat(data[1].price).toLocaleString(undefined, {minimumFractionDigits: 2});
-                document.getElementById('sol-live').innerText = '$' + parseFloat(data[2].price).toLocaleString(undefined, {minimumFractionDigits: 2});
-            } catch (error) {
-                console.log("Market Pulse Syncing...");
+        // Risk Management Logic
+        let trades = 0;
+        function logTrade() {
+            let max = document.getElementById('maxTrades').value;
+            trades++;
+            document.getElementById('currentTrades').innerText = trades;
+            if(trades >= max) {
+                alert("CRITICAL ALERT: Daily Trade Limit Reached! System suggest closing Terminal to prevent Overtrading.");
             }
         }
 
-        // Auto Refresh
-        setInterval(fetchMarketData, 2500);
-        fetchMarketData();
+        // Live Market Data
+        async function updateMarket() {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+                const data = await res.json();
+                document.getElementById('btc-val').innerText = '$' + parseFloat(data[0].price).toLocaleString();
+                document.getElementById('eth-val').innerText = '$' + parseFloat(data[1].price).toLocaleString();
+                document.getElementById('sol-val').innerText = '$' + parseFloat(data[2].price).toLocaleString();
+            } catch(e) { console.log("Syncing Global Nodes..."); }
+        }
+        setInterval(updateMarket, 3000);
+        updateMarket();
     </script>
 </body>
 </html>
