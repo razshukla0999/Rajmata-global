@@ -2,65 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RED X GLOBAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RED X | BY RAZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0a0a0b; --surface: #121214; --accent: #ff003c; --gold: #d4af37; --text: #f0f0f0; --green: #00ff88; }
-        .light-mode { --bg: #f4f4f9; --surface: #ffffff; --text: #121212; --gold: #a67c00; }
+        :root { --neon-red: #ff0000; --gold: #D4AF37; --bg: #050505; --text: #fff; --panel: #111; }
+        .light-theme { --bg: #f4f4f4; --text: #000; --panel: #fff; --neon-red: #d00000; }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: 0.3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.3s; overflow: hidden; }
 
-        /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 9999; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
-        .nav-item { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-decoration: none; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
+        /* Main App Container */
+        #app { height: 100vh; display: flex; flex-direction: column; }
 
-        /* Screen Management */
-        .screen { display: none; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 100px; width: 100%; }
-        .active-screen { display: block !important; animation: fadeIn 0.2s ease-in; }
+        /* Header */
+        header { padding: 15px; border-bottom: 1px solid var(--neon-red); display: flex; justify-content: space-between; align-items: center; background: var(--panel); }
+        .logo { font-family: 'Playfair Display', serif; color: var(--neon-red); font-weight: 900; letter-spacing: 2px; }
 
-        /* Components */
-        .ticker { background: #000; color: var(--gold); padding: 10px; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--accent); white-space: nowrap; }
-        .card { background: var(--surface); padding: 20px; border-radius: 18px; border: 1px solid rgba(128,128,128,0.1); margin-top: 15px; }
-        .price { font-size: 24px; font-weight: 800; color: var(--green); margin-top: 5px; }
-        .news-card { border-left: 4px solid var(--accent); margin-bottom: 12px; }
-        
-        /* Settings Fix */
-        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px; background: var(--surface); border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(128,128,128,0.1); }
-        
-        button { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        /* Content Area */
+        main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .active { display: block; }
+
+        /* X-Reels Style */
+        .reel-card { width: 100%; height: 400px; background: #222; margin-bottom: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid var(--gold); }
+        .reel-tag { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; padding: 5px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 5px; }
+        .lock-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 10px; text-align: center; font-size: 0.8rem; color: var(--gold); }
+
+        /* Bottom Nav */
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--panel); border-top: 1px solid var(--dim); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon-red); }
+        .nav-item { cursor: pointer; color: #888; font-size: 0.7rem; text-align: center; text-transform: uppercase; font-weight: 600; }
+        .nav-item.active-nav { color: var(--neon-red); }
+
+        /* Buttons & Inputs */
+        .btn { background: var(--neon-red); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid var(--dim); color: white; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="ticker">
-        <marquee scrollamount="6" id="marquee-text">INITIALIZING GLOBAL DATA FEED... BTC/USD: $--- | XAU/USD: $--- | SYSTEM ONLINE</marquee>
-    </div>
+<div id="app">
+    <header>
+        <div class="logo">PROJECT RED X</div>
+        <div id="sync-status" style="font-size: 0.6rem; color: #00ff41;">● SYSTEM LIVE</div>
+    </header>
 
-    <div id="market" class="screen active-screen">
-        <h2 style="font-size: 24px;">Market Terminal</h2>
-        <div class="card">
-            <p style="font-size: 11px; color: #888;">BITCOIN / USDT</p>
-            <div class="price" id="btc-price">Fetching...</div>
+    <main>
+        <div id="terminal" class="section active">
+            <h3 style="color: var(--gold);">GLOBAL MARKET PULSE</h3>
+            <div id="btc-price" style="font-size: 2.5rem; margin: 20px 0; font-weight: bold;">$00,000.00</div>
+            <p style="font-size: 0.8rem; color: #888;">Live Aggregator: Binance | Rajmata Global Nodes</p>
+            <hr style="margin: 20px 0; border: 0.1px solid #333;">
+            <div style="background: #111; padding: 15px; border-left: 3px solid var(--neon-red);">
+                <p style="font-size: 0.9rem;"><b>NEWS:</b> Global Markets bracing for impact. Trading discipline is key.</p>
+            </div>
         </div>
-        <div class="card">
-            <p style="font-size: 11px; color: #888;">GOLD / USD (XAU)</p>
-            <div class="price" id="xau-price" style="color: var(--gold);">$2,038.45</div>
-        </div>
-        <div class="card" style="text-align: center;">
-            <p style="font-size: 11px; color: #888;">ACTIVE NETWORK TYCOONS</p>
-            <h2 style="margin-top: 5px; color: var(--accent);">1,482</h2>
-        </div>
-    </div>
 
-    <div id="news" class="screen">
-        <h2>Global Intelligence</h2>
-        <div class="card news-card">
-            <p style="font-size: 10px; color: var(--gold);">BLOOMBERG • LIVE</p>
-            <p style="font-size: 14px; font-weight: 600; margin-top: 5px;">Institutional Bitcoin demand hits yearly high as BTC nears resistance.</p>
+        <div id="reels" class="section">
+            <h3 style="color: var(--gold); margin-bottom: 20px;">X-REELS: BUSINESS ONLY</h3>
+            <div class="reel-card">
+                <div class="reel-tag">TRADING MOTIVATION</div>
+                <p>REEL PREVIEW [GUEST MODE]</p>
+                <div class="lock-overlay">Login to Share or Upload</div>
+            </div>
+            <div class="reel-card">
+                <div class="reel-tag">KHAJURAHO BUSINESS NEWS</div>
+                <p>REEL PREVIEW [GUEST MODE]</p>
+                <div class="lock-overlay">Login to Share or Upload</div>
+            </div>
         </div>
-        <div class="card news-card" style="border-left-color: var(--gold);">
-            <p style="font-size: 10px; color: var(--gold);">REUTERS • 5M AGO</p>
-            <p style="font-size: 14px; font-weight: 600; margin-top
+
+        <div id="ai" class="section">
+            <h3>RED X AI ASSISTANT</h3>
+            <div style="height: 250px; background: #111; border: 1px solid #333; margin: 20px 0; padding: 15px; font-size: 0.9rem;">
+                <p style="color: var(--neon-red);">[RED X AI]: Hello RAZ. Standing by for market analysis or Overtrading protection protocols.</p>
+            </div>
+            <input type="text" placeholder="Ask RED X AI (Account Required)..." disabled>
+            <button class="btn" onclick="alert('Login Required for AI Access')">Login to Chat</button>
+        </div>
+
+        <div id="network" class="section">
+            <h3>GLOBAL NETWORK</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem;">Join the elite community of RAZ industries.</p>
+            <input type="text" placeholder="Username/Email">
+            <input type="password" placeholder="Password">
+            <button class="btn">LOGIN</button>
+            <button class="btn" style="background: #333; margin-top: 10px;">SIGN UP</button>
+        </div>
+
+        <div id="settings" class="section">
+            <h3>SYSTEM SETTINGS</h3>
+            <label class="data-label">THEME SELECTOR</label>
+            <select id="themeChange" onchange="changeTheme()">
+                <option value="dark">Dark (Signature Red)</option>
+                <option value="light">Bright (Professional)</option>
+                <option value="system">System Default</option>
+            </select>
+            <hr style="margin: 20px 0; border: 0.1px solid #333;">
+            <div style="font-size: 0.8rem; color: #888;">
+                <p>App Version: 5.0.0 (Global Edition)</p>
+                <p>Network: Rajmata Global</p>
+                <p>Director: RAZ</p>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align: center; font-size: 0.6rem; padding: 5px; color: #555;">
+        DIRECTED BY RAZ | POWERED BY RAJMATA GLOBAL
+    </footer>
+
+    <nav>
+        <div class="nav-item active-nav" onclick="showSection('terminal', this)">Terminal</div>
+        <div class="nav-item" onclick="showSection('reels', this)">X-Reels</div>
+        <div class="nav-item" onclick="showSection('ai', this)">RED X AI</div>
+        <div class="nav-item" onclick="showSection('network', this)">Network</div>
+        <div class="nav-item" onclick="showSection('settings', this)">Settings</div>
+    </nav>
+</div>
+
+<script>
+    function showSection(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+        el.classList.add('active-nav');
+    }
+
+    async function updatePrice() {
+        try {
+            const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+            const data = await res.json();
+            document.getElementById('btc-price').innerText = '$' + parseFloat(data.price).toLocaleString(undefined, {minimumFractionDigits: 2});
+        } catch(e) {}
+    }
+
+    function changeTheme() {
+        const theme = document.getElementById('themeChange').value;
+        if(theme === 'light') document.body.classList.add('light-theme');
+        else document.body.classList.remove('light-theme');
+    }
+
+    setInterval(updatePrice, 3000);
+    updatePrice();
+</script>
+
+</body>
+</html>
