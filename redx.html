@@ -2,294 +2,232 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REDX OS | FULL ACCESS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REDX | THE SOCIAL EMPIRE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff0000; --gold: #D4AF37; --bg: #000; --panel: #0d0d0d; --text: #fff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+        :root { --accent: #ff0000; --bg: #000; --surface: #121212; --text: #fff; --grey: #8e8e8e; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-        /* --- 1. BOOT & ACCESS --- */
-        #boot-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;
         }
-        .boot-btn {
-            border: 2px solid var(--accent); background: transparent; color: var(--accent);
-            padding: 15px 30px; font-family: 'Orbitron'; cursor: pointer; font-size: 1.2rem;
-            box-shadow: 0 0 20px var(--accent); transition: 0.3s;
-        }
-        .boot-btn:hover { background: var(--accent); color: #000; }
+        .logo-font { font-family: 'Orbitron'; font-size: 3rem; color: var(--accent); margin-bottom: 40px; }
+        .login-input { width: 100%; max-width: 350px; background: #262626; border: 1px solid #363636; padding: 12px; border-radius: 5px; color: #fff; margin-bottom: 15px; }
+        .btn-primary { width: 100%; max-width: 350px; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .divider { margin: 20px 0; color: var(--grey); font-size: 0.8rem; }
+        .google-btn { width: 100%; max-width: 350px; background: #fff; color: #000; border: none; padding: 12px; border-radius: 5px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
 
-        /* --- 2. LAYOUT & NAVIGATION --- */
-        .screen-section { display: none; height: calc(100vh - 80px); padding: 10px; overflow-y: auto; animation: fadeIn 0.5s; }
-        .active-screen { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- MAIN APP LAYOUT --- */
+        #main-app { display: none; height: 100vh; flex-direction: column; }
+        .content-area { flex: 1; overflow-y: auto; scroll-snap-type: y mandatory; }
+        .content-area::-webkit-scrollbar { display: none; }
 
-        nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #080808; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .nav-icon { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 0.6rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .nav-icon span { font-size: 1.2rem; margin-bottom: 2px; }
-        .nav-icon.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-
-        /* --- 3. TERMINAL & OVERTRADING --- */
-        .ticker-top { background: #111; padding: 10px; border-bottom: 1px solid #333; white-space: nowrap; overflow: hidden; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--gold); }
-        
-        .risk-panel { background: rgba(255, 0, 0, 0.1); border: 1px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .risk-stat { font-size: 0.8rem; }
-        .risk-btn { background: var(--accent); border: none; color: white; padding: 5px 15px; cursor: pointer; font-weight: bold; }
-
-        .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .asset-card { background: #151515; padding: 15px; border: 1px solid #333; text-align: center; border-radius: 5px; }
-        .asset-card h3 { font-size: 0.8rem; color: #888; }
-        .asset-card p { font-family: 'Orbitron'; font-size: 1.2rem; color: #00ff41; margin-top: 5px; }
-
-        /* --- 4. WIRE (REELS) --- */
-        .wire-container { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; border-radius: 10px; }
-        .wire-container::-webkit-scrollbar { display: none; }
-        .reel-unit { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; border-bottom: 2px solid #222; }
+        /* --- INSTA REEL ENGINE --- */
+        .reel-container { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-overlay { position: absolute; bottom: 20px; left: 15px; z-index: 10; pointer-events: none; }
-        .reel-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; z-index: 20; }
-        .action-circle { width: 45px; height: 45px; background: rgba(0,0,0,0.6); border: 1px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 1.2rem; }
-
-        /* --- 5. AI ANALYST --- */
-        .chat-box { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; border: 1px solid #333; background: #111; padding: 10px; overflow-y: auto; margin-bottom: 10px; border-radius: 5px; }
-        .msg { padding: 8px 12px; margin-bottom: 8px; border-radius: 5px; max-width: 80%; font-size: 0.8rem; }
-        .msg.sys { background: rgba(255, 0, 0, 0.2); border-left: 2px solid var(--accent); align-self: flex-start; }
-        .msg.user { background: #333; align-self: flex-end; margin-left: auto; }
-        .chat-input-area { display: flex; gap: 5px; }
-        .chat-input { flex: 1; background: #222; border: 1px solid #444; color: white; padding: 10px; }
-        .chat-btn { background: var(--accent); border: none; color: white; padding: 0 20px; cursor: pointer; }
-
-        /* --- 6. NETWORK & SETTINGS --- */
-        .node-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .node-item { background: #111; padding: 15px; border-left: 3px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .node-item.online { border-color: #00ff41; }
-        .node-item.offline { border-color: var(--accent); }
         
-        .setting-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #222; align-items: center; }
-        .toggle { width: 40px; height: 20px; background: #333; border-radius: 20px; position: relative; }
-        .toggle::after { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:0.3s; }
-        .toggle.on { background: var(--accent); }
-        .toggle.on::after { left: 22px; }
+        .reel-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 60%, rgba(0,0,0,0.8)); pointer-events: none; }
+        .reel-meta { position: absolute; bottom: 20px; left: 15px; width: 70%; z-index: 10; }
+        .user-tag { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600; }
+        .user-tag img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); }
+        
+        .reel-actions { position: absolute; right: 15px; bottom: 40px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
+        .action-unit { text-align: center; font-size: 0.7rem; color: #fff; cursor: pointer; }
+        .action-unit span { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+
+        /* --- NAVIGATION BAR --- */
+        nav { height: 60px; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; align-items: center; }
+        .nav-item { color: #fff; font-size: 1.4rem; cursor: pointer; transition: 0.2s; position: relative; }
+        .nav-item.active { color: var(--accent); }
+
+        /* --- OVERTRADING PROTECTOR HUD --- */
+        .risk-hud {
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,0,0,0.2); border: 1px solid var(--accent);
+            padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-family: 'Orbitron';
+            backdrop-filter: blur(10px); z-index: 1000; pointer-events: none;
+        }
+
+        /* --- CHAT SECTION --- */
+        .page-view { display: none; height: 100%; padding: 20px; overflow-y: auto; }
+        .active-page { display: block; }
+        .chat-list-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #262626; }
+        .online-dot { width: 10px; height: 10px; background: #00ff41; border-radius: 50%; }
 
     </style>
 </head>
 <body>
 
-    <div id="boot-screen">
-        <h1 style="font-family:'Orbitron'; color:var(--accent); font-size:3rem; margin-bottom:10px;">REDX OS</h1>
-        <p style="color:#666; margin-bottom:30px; letter-spacing:2px;">DIRECTED BY RAZ</p>
-        <button class="boot-btn" onclick="systemStart()">INITIALIZE SYSTEMS</button>
+    <div class="risk-hud">
+        TRADES: <span id="global-trades">0</span>/5 | <span style="color:var(--accent)">OVERTRADING PROTECTION ACTIVE</span>
     </div>
 
-    <div id="tab-terminal" class="screen-section">
-        <div class="ticker-top">
-            BTC: <span style="color:#00ff41">$64,520</span> &nbsp;|&nbsp; 
-            GOLD: <span style="color:#00ff41">$2,145</span> &nbsp;|&nbsp; 
-            NIFTY: <span style="color:var(--accent)">21,900</span>
-        </div>
+    <div id="login-screen">
+        <div class="logo-font">REDX</div>
+        <input type="text" class="login-input" placeholder="Phone number, username, or email">
+        <input type="password" class="login-input" placeholder="Password">
+        <button class="btn-primary" onclick="login()">Log In</button>
+        <div class="divider">OR</div>
+        <button class="google-btn">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Continue with Google
+        </button>
+    </div>
 
-        <br>
-        <div class="risk-panel">
-            <div>
-                <b style="color:var(--accent)">⚠️ RISK PROTOCOL</b>
-                <div class="risk-stat">Trades: <span id="trade-count" style="color:white; font-size:1.2rem;">0</span> / <input type="number" id="trade-limit" value="5" style="width:40px; background:#000; color:var(--accent); border:none;"></div>
-            </div>
-            <button class="risk-btn" onclick="addTrade()">LOG TRADE</button>
-        </div>
-
-        <div class="asset-grid">
-            <div class="asset-card"><h3>BITCOIN</h3><p id="p-btc">$---</p></div>
-            <div class="asset-card"><h3>ETHEREUM</h3><p id="p-eth">$---</p></div>
-            <div class="asset-card"><h3>SOLANA</h3><p id="p-sol">$---</p></div>
-            <div class="asset-card"><h3>USDT/INR</h3><p style="color:var(--gold)">₹91.45</p></div>
-        </div>
+    <div id="main-app">
         
-        <div style="margin-top:20px; padding:15px; background:#111; border:1px solid #333;">
-            <h4 style="color:var(--gold)">SAVED VAULT</h4>
-            <div id="vault-list" style="font-size:0.7rem; color:#666; margin-top:10px;">No saved intelligence yet.</div>
-        </div>
-    </div>
-
-    <div id="tab-wire" class="screen-section">
-        <div class="wire-container" id="video-scroller">
-            <div class="reel-unit">
-                <video id="vid1" loop playsinline><source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4"></video>
-                <div class="reel-overlay">
-                    <h3 style="color:var(--gold)">@RAZ_DIRECTOR</h3>
-                    <p style="font-size:0.8rem;">Volatility is an opportunity. Stay focused. #REDX</p>
+        <div id="viewport" style="flex:1; position:relative;">
+            
+            <div id="page-reels" class="content-area" style="display:block; height:100%;">
                 </div>
-                <div class="reel-actions">
-                    <div class="action-circle">❤️</div>
-                    <div class="action-circle" onclick="saveToVault('Volatility Intel')">🔖</div>
+
+            <div id="page-chat" class="page-view">
+                <h2 style="margin-bottom:20px;">Direct Messages</h2>
+                <div class="chat-list-item">
+                    <div style="width:45px; height:45px; background:var(--accent); border-radius:50%;"></div>
+                    <div style="flex:1;"><b>Raz_Director</b><p style="font-size:0.8rem; color:var(--grey);">System Update: New nodes online.</p></div>
+                    <div class="online-dot"></div>
+                </div>
+                <div class="chat-list-item">
+                    <div style="width:45px; height:45px; background:#444; border-radius:50%;"></div>
+                    <div style="flex:1;"><b>Empire_Support</b><p style="font-size:0.8rem; color:var(--grey);">Your withdrawal is processed.</p></div>
                 </div>
             </div>
-            <div class="reel-unit">
-                <video id="vid2" loop playsinline><source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4"></video>
-                <div class="reel-overlay">
-                    <h3 style="color:var(--gold)">@RAZ_DIRECTOR</h3>
-                    <p style="font-size:0.8rem;">Global Industrial Shift. Energy sector booming. #Empire</p>
+
+            <div id="page-ai" class="page-view">
+                <div style="height:100%; display:flex; flex-direction:column;">
+                    <h2 style="font-family:'Orbitron'; color:var(--accent);">AI STRATEGIST</h2>
+                    <div id="ai-convo" style="flex:1; margin:20px 0; overflow-y:auto; border-top:1px solid #262626; padding-top:20px;">
+                        <div style="background:#262626; padding:15px; border-radius:10px; margin-bottom:15px; font-size:0.9rem;">
+                            Director Raz, market liquidity is currently concentrating in BTC-perp. Should I monitor for stop-runs?
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="ai-input" class="login-input" style="margin:0;" placeholder="Message AI...">
+                        <button class="btn-primary" style="width:80px;" onclick="askAI()">Send</button>
+                    </div>
                 </div>
-                <div class="reel-actions">
-                    <div class="action-circle">❤️</div>
-                    <div class="action-circle" onclick="saveToVault('Industrial Shift')">🔖</div>
-                </div>
             </div>
-        </div>
-    </div>
 
-    <div id="tab-ai" class="screen-section">
-        <h3 style="color:var(--accent); border-bottom:1px solid #333; padding-bottom:10px;">AI STRATEGIST</h3>
-        <div class="chat-box">
-            <div class="chat-log" id="chat-log">
-                <div class="msg sys">System Online. How can I assist you with the market today, Sir?</div>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" class="chat-input" id="user-input" placeholder="Ask about trends...">
-                <button class="chat-btn" onclick="sendAI()">SEND</button>
-            </div>
         </div>
-    </div>
 
-    <div id="tab-network" class="screen-section">
-        <h3 style="color:var(--gold); margin-bottom:15px;">GLOBAL EMPIRE NODES</h3>
-        <div class="node-list">
-            <div class="node-item online">
-                <span>📍 KHAJURAHO HQ</span> <span style="color:#00ff41; font-size:0.7rem;">ONLINE</span>
-            </div>
-            <div class="node-item online">
-                <span>📍 MUMBAI SERVER</span> <span style="color:#00ff41; font-size:0.7rem;">SYNCED</span>
-            </div>
-            <div class="node-item offline">
-                <span>📍 LONDON HUB</span> <span style="color:var(--accent); font-size:0.7rem;">OFFLINE</span>
-            </div>
-            <div class="node-item online">
-                <span>📍 DUBAI CRYPTO</span> <span style="color:#00ff41; font-size:0.7rem;">ACTIVE</span>
-            </div>
-        </div>
+        <nav>
+            <div class="nav-item active" onclick="switchPage('reels', this)">🏠</div>
+            <div class="nav-item" onclick="switchPage('ai', this)">🤖</div>
+            <div class="nav-item" onclick="logTrade()">➕</div>
+            <div class="nav-item" onclick="switchPage('chat', this)">💬</div>
+            <div class="nav-item">👤</div>
+        </nav>
     </div>
-
-    <div id="tab-settings" class="screen-section">
-        <h3 style="margin-bottom:20px;">SYSTEM CONFIG</h3>
-        <div class="setting-row">
-            <span>Dark Mode</span> <div class="toggle on"></div>
-        </div>
-        <div class="setting-row">
-            <span>Trade Notifications</span> <div class="toggle on"></div>
-        </div>
-        <div class="setting-row">
-            <span>Audio Feedback</span> <div class="toggle"></div>
-        </div>
-        <div style="margin-top:30px; border:1px solid var(--accent); padding:10px; color:var(--accent); text-align:center;">
-            LOGOUT TERMINAL
-        </div>
-    </div>
-
-    <nav>
-        <div class="nav-icon active" onclick="switchTab('terminal', this)"><span>📊</span>Terminal</div>
-        <div class="nav-icon" onclick="switchTab('wire', this)"><span>🎬</span>Wire</div>
-        <div class="nav-icon" onclick="switchTab('ai', this)"><span>🤖</span>AI</div>
-        <div class="nav-icon" onclick="switchTab('network', this)"><span>🌍</span>Network</div>
-        <div class="nav-icon" onclick="switchTab('settings', this)"><span>⚙️</span>Settings</div>
-    </nav>
 
     <script>
-        // --- 1. BOOT LOGIC ---
-        function systemStart() {
-            document.getElementById('boot-screen').style.display = 'none';
-            switchTab('terminal', document.querySelector('.nav-icon'));
+        // --- DATA FOR UNLIMITED REELS ---
+        const videoSources = [
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        ];
+
+        // --- CORE FUNCTIONS ---
+        function login() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            initReels();
         }
 
-        // --- 2. NAVIGATION LOGIC ---
-        function switchTab(tabName, btnElement) {
-            // Hide all sections
-            document.querySelectorAll('.screen-section').forEach(el => el.classList.remove('active-screen'));
-            // Show target section
-            document.getElementById('tab-' + tabName).classList.add('active-screen');
-            
-            // Update Nav Icons
-            document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
+        function initReels() {
+            const container = document.getElementById('page-reels');
+            for(let i=0; i<15; i++) {
+                const src = videoSources[i % videoSources.length];
+                container.innerHTML += `
+                <div class="reel-container">
+                    <video loop playsinline onclick="togglePlay(this)">
+                        <source src="${src}" type="video/mp4">
+                    </video>
+                    <div class="reel-overlay"></div>
+                    <div class="reel-meta">
+                        <div class="user-tag">
+                            <div style="width:30px; height:30px; background:var(--accent); border-radius:50%;"></div>
+                            <span>raz_official • Follow</span>
+                        </div>
+                        <p style="font-size:0.85rem;">Trading the matrix. System active. #REDX #Empire</p>
+                    </div>
+                    <div class="reel-actions">
+                        <div class="action-unit"><span>❤️</span>42.5K</div>
+                        <div class="action-unit"><span>💬</span>842</div>
+                        <div class="action-unit"><span>🔖</span>Save</div>
+                        <div class="action-unit"><span>🔗</span></div>
+                    </div>
+                </div>`;
+            }
+            // Auto-play first video
+            setTimeout(() => { document.querySelector('video').play(); }, 500);
+        }
 
-            // Special Case: Pause Videos if leaving 'Wire'
-            const videos = document.querySelectorAll('video');
-            if (tabName !== 'wire') {
-                videos.forEach(v => v.pause());
+        function switchPage(page, el) {
+            document.getElementById('page-reels').style.display = 'none';
+            document.getElementById('page-chat').classList.remove('active-page');
+            document.getElementById('page-ai').classList.remove('active-page');
+            
+            if(page === 'reels') document.getElementById('page-reels').style.display = 'block';
+            else document.getElementById('page-' + page).classList.add('active-page');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+
+            const vids = document.querySelectorAll('video');
+            if(page !== 'reels') vids.forEach(v => v.pause());
+            else vids[0].play();
+        }
+
+        let tradeCount = 0;
+        function logTrade() {
+            tradeCount++;
+            document.getElementById('global-trades').innerText = tradeCount;
+            if(tradeCount >= 5) {
+                alert("🔴 REDX OVERTRADING ALERT: Limit Reached. System locking features.");
             } else {
-                // Try to play first video if entering wire
-                document.getElementById('vid1').play().catch(e=>{});
+                alert("Trade Logged Successfully.");
             }
         }
 
-        // --- 3. OVERTRADING LOGIC ---
-        let trades = 0;
-        function addTrade() {
-            const limit = document.getElementById('trade-limit').value;
-            trades++;
-            document.getElementById('trade-count').innerText = trades;
+        function askAI() {
+            const input = document.getElementById('ai-input');
+            const convo = document.getElementById('ai-convo');
+            if(!input.value) return;
+
+            convo.innerHTML += `<div style="text-align:right; margin-bottom:15px;"><span style="background:var(--accent); padding:10px; border-radius:10px; display:inline-block;">${input.value}</span></div>`;
             
-            if(trades >= limit) {
-                document.querySelector('.risk-panel').style.background = "red";
-                alert("⛔ CRITICAL: OVERTRADING DETECTED. STOP TRADING IMMEDIATELY.");
-            }
-        }
-
-        // --- 4. VAULT LOGIC ---
-        function saveToVault(name) {
-            const list = document.getElementById('vault-list');
-            if(list.innerText.includes('No saved')) list.innerHTML = '';
-            list.innerHTML += `<div style="padding:5px; border-bottom:1px solid #333;">▶ ${name}</div>`;
-            alert("Added to Vault.");
-        }
-
-        // --- 5. AI CHAT LOGIC ---
-        function sendAI() {
-            const input = document.getElementById('user-input');
-            const log = document.getElementById('chat-log');
-            if(input.value.trim() === "") return;
-
-            // User msg
-            log.innerHTML += `<div class="msg user">${input.value}</div>`;
-            
-            // Mock System Reply
             setTimeout(() => {
-                const replies = [
-                    "Analyzing market depth... Trend is Bullish.",
-                    "Volume spike detected in BTC pairs.",
-                    "Risk parameters are stable.",
-                    "Khajuraho Node reports optimal latency."
-                ];
-                const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                log.innerHTML += `<div class="msg sys">${randomReply}</div>`;
-                log.scrollTop = log.scrollHeight;
+                convo.innerHTML += `<div style="background:#262626; padding:15px; border-radius:10px; margin-bottom:15px; border-left:3px solid var(--accent);">Scanning global nodes... Based on current order flow, BTC is looking bullish. Resistance at $68,500.</div>`;
+                convo.scrollTop = convo.scrollHeight;
             }, 1000);
-            
             input.value = "";
         }
 
-        // --- 6. DATA SYNC ---
-        async function fetchPrices() {
-            try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-                const data = await res.json();
-                document.getElementById('p-btc').innerText = '$' + parseFloat(data[0].price).toFixed(2);
-                document.getElementById('p-eth').innerText = '$' + parseFloat(data[1].price).toFixed(2);
-                document.getElementById('p-sol').innerText = '$' + parseFloat(data[2].price).toFixed(2);
-            } catch(e) {}
+        function togglePlay(vid) {
+            if (vid.paused) vid.play();
+            else vid.pause();
         }
-        setInterval(fetchPrices, 3000);
 
-        // --- 7. SCROLL VIDEO HANDLER ---
-        document.getElementById('video-scroller').addEventListener('scroll', () => {
-            document.querySelectorAll('video').forEach(v => {
+        // --- INFINITE SCROLL ENGINE ---
+        document.getElementById('page-reels').addEventListener('scroll', function() {
+            const vids = this.querySelectorAll('video');
+            vids.forEach(v => {
                 const rect = v.getBoundingClientRect();
                 if(rect.top >= 0 && rect.bottom <= window.innerHeight) v.play();
                 else v.pause();
             });
+
+            // If near end, add more reels (Unlimited Loop)
+            if(this.scrollTop + this.clientHeight >= this.scrollHeight - 100) {
+                initReels(); 
+            }
         });
     </script>
 </body>
