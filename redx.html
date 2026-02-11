@@ -10,141 +10,176 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-        /* SPLASH SCREEN (LOADING) */
+        /* BOOT SCREEN */
         #splash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; z-index: 9999;
-            transition: opacity 0.8s ease;
         }
-        .logo-box {
-            font-family: 'Orbitron', sans-serif; font-size: 3.5rem;
-            color: var(--accent); text-shadow: 0 0 20px var(--accent);
-            margin-bottom: 20px; letter-spacing: 5px; animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        
-        .load-bar { width: 200px; height: 3px; background: #222; border-radius: 10px; overflow: hidden; }
-        .load-fill { width: 0%; height: 100%; background: var(--accent); animation: fill 2.5s forwards; }
-        @keyframes fill { to { width: 100%; } }
+        .boot-logo { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; color: var(--accent); text-shadow: 0 0 15px var(--accent); margin-bottom: 10px; }
+        .boot-bar { width: 180px; height: 2px; background: #222; position: relative; overflow: hidden; }
+        .boot-fill { width: 0%; height: 100%; background: var(--accent); animation: boot 2.5s forwards; }
+        @keyframes boot { to { width: 100%; } }
 
-        /* DASHBOARD LAYOUT */
-        .app-container { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 120px); gap: 5px; padding: 5px; opacity: 0; transition: 1s; }
-        .visible { opacity: 1 !important; }
+        /* MAIN APP LAYOUT */
+        .app-container { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 120px); gap: 10px; padding: 10px; visibility: hidden; }
 
         /* REEL ENGINE (INSTA STYLE) */
-        .reel-engine { background: #000; overflow-y: scroll; scroll-snap-type: y mandatory; height: 100%; scroll-behavior: smooth; }
-        .reel-engine::-webkit-scrollbar { display: none; }
-        .reel-card { height: 100%; width: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #111; }
-        .reel-video { width: 100%; height: 100%; object-fit: cover; }
+        .wire-feed { background: #000; border-radius: 15px; overflow-y: scroll; scroll-snap-type: y mandatory; height: 100%; position: relative; }
+        .wire-feed::-webkit-scrollbar { display: none; }
         
-        /* REEL UI & ACTIONS */
-        .reel-ui { position: absolute; bottom: 30px; left: 20px; z-index: 10; width: 75%; text-shadow: 2px 2px 4px #000; }
-        .reel-actions { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
-        .action-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; }
-        .action-btn:hover { background: var(--accent); }
+        .reel-frame { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #111; }
+        video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
 
-        /* NEWS & TERMINAL STYLES */
-        .top-ticker { background: #000; border-bottom: 2px solid var(--accent); padding: 8px; overflow: hidden; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; }
-        .ticker-move { display: flex; animation: scrollText 30s linear infinite; gap: 50px; }
-        @keyframes scrollText { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        .reel-info { position: absolute; bottom: 30px; left: 20px; z-index: 5; max-width: 80%; }
+        .reel-info b { color: var(--gold); font-size: 1rem; display: block; margin-bottom: 5px; }
+        .reel-info p { font-size: 0.8rem; line-height: 1.4; }
 
-        .news-panel { background: #080808; border: 1px solid var(--accent); padding: 15px; overflow-y: auto; }
-        .news-item { border-bottom: 1px solid #222; padding: 12px 0; cursor: pointer; }
-        .news-item h4 { font-size: 0.85rem; color: var(--gold); }
-        .news-item p { font-size: 0.7rem; color: #888; display: none; margin-top: 8px; line-height: 1.4; }
-        .news-item.open p { display: block; }
+        .side-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; z-index: 5; }
+        .btn-circle { width: 50px; height: 50px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 1.2rem; }
+        .btn-circle:hover { background: var(--accent); transform: scale(1.1); }
 
-        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; }
-        .n-link { color: #666; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .n-link.active { color: var(--accent); }
+        /* NEWS & SAVED SECTION */
+        .side-hub { background: var(--panel); border: 1px solid var(--accent); padding: 15px; overflow-y: auto; border-radius: 10px; }
+        .news-box { margin-bottom: 30px; }
+        .news-card { border-left: 3px solid var(--accent); padding: 10px; background: #111; margin-bottom: 10px; cursor: pointer; }
+        .news-card h5 { color: var(--gold); font-size: 0.85rem; margin-bottom: 5px; }
+        .news-card p { font-size: 0.7rem; color: #888; height: 0; overflow: hidden; transition: 0.3s; }
+        .news-card.active p { height: auto; margin-top: 10px; }
+
+        .saved-vault { border-top: 1px solid #333; padding-top: 20px; }
+        .vault-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #151515; padding: 8px; border-radius: 5px; font-size: 0.7rem; }
+
+        /* TICKER & NAV */
+        .ticker { background: #000; border-bottom: 2px solid var(--accent); padding: 10px; overflow: hidden; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--gold); }
+        .ticker-wrap { display: flex; animation: tick 40s linear infinite; gap: 60px; }
+        @keyframes tick { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        
+        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 2px solid var(--accent); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { color: #555; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .nav-item.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <div class="logo-box">REDX</div>
-        <p style="color:var(--gold); font-size:0.6rem; letter-spacing:3px; margin-bottom:15px;">POWERED BY RAZ</p>
-        <div class="load-bar"><div class="load-fill"></div></div>
+        <div class="boot-logo">REDX</div>
+        <p style="color:var(--gold); font-size:0.6rem; letter-spacing:4px; margin-bottom:15px;">DIRECTED BY RAZ</p>
+        <div class="boot-bar"><div class="boot-fill"></div></div>
     </div>
 
-    <div class="top-ticker">
-        <div class="ticker-move">
+    <div class="ticker">
+        <div class="ticker-wrap">
             <span>BITCOIN: <b id="p-btc" style="color:#00ff41">$---</b></span>
             <span>GOLD: <b style="color:#00ff41">$2,044.20</b></span>
-            <span>USDT/INR: <b style="color:var(--gold)">₹91.52</b></span>
-            <span>CRUDE OIL: <b style="color:#00ff41">$78.20</b></span>
+            <span>NIFTY 50: <b style="color:#00ff41">21,840.10</b></span>
+            <span>DXY: <b style="color:var(--accent)">104.15</b></span>
+            <span>USDT/INR: <b style="color:var(--gold)">₹91.45</b></span>
         </div>
     </div>
 
     <div class="app-container" id="mainApp">
-        <div class="reel-engine">
-            <div class="reel-card">
-                <video class="reel-video" autoplay loop muted playsinline>
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-busy-street-in-a-futuristic-city-at-night-3401-large.mp4" type="video/mp4">
+        <div class="wire-feed" id="feed">
+            <div class="reel-frame">
+                <video loop muted playsinline autoplay>
+                    <source src="https://v1.shared-video.com/v/17154/f5352c4a.mp4" type="video/mp4">
                 </video>
-                <div class="reel-ui">
-                    <h3 style="color:var(--gold)">@RAZ_DIRECTOR</h3>
-                    <p>Financial independence starts with discipline. #ProjectREDX</p>
+                <div class="reel-info">
+                    <b>@RAZ_DIRECTOR</b>
+                    <p>Trading is the ultimate game of patience. Are you ready? #REDX</p>
                 </div>
-                <div class="reel-actions">
-                    <div class="action-btn" onclick="alert('Liked!')">❤️</div>
-                    <div class="action-btn" onclick="saveReel(this)">🔖</div>
-                    <div class="action-btn" onclick="alert('Link Copied!')">🔗</div>
+                <div class="side-actions">
+                    <div class="btn-circle">❤️</div>
+                    <div class="btn-circle" onclick="saveToVault('Trading Patience Video')">🔖</div>
+                    <div class="btn-circle">🔗</div>
                 </div>
             </div>
+            <div class="reel-frame">
+                <video loop muted playsinline>
+                    <source src="https://v1.shared-video.com/v/17154/e2e5e4d2.mp4" type="video/mp4">
+                </video>
+                <div class="reel-info">
+                    <b>@RAZ_DIRECTOR</b>
+                    <p>Global liquidity is shifting. Track the smart money. #ProjectREDX</p>
+                </div>
+                <div class="side-actions">
+                    <div class="btn-circle">❤️</div>
+                    <div class="btn-circle" onclick="saveToVault('Liquidity Shift Intel')">🔖</div>
+                    <div class="btn-circle">🔗</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-hub">
+            <div class="news-box">
+                <h3 style="color:var(--accent); font-size:0.8rem; margin-bottom:15px; letter-spacing:1px;">INTEL WIRE</h3>
+                <div class="news-card" onclick="this.classList.toggle('active')">
+                    <h5>Global Markets Bracing for Impact</h5>
+                    <p>Trading discipline is key as we detect massive volatility in the Asian sessions. Stay focused on your stop-losses.</p>
+                </div>
+                <div class="news-card" onclick="this.classList.toggle('active')">
+                    <h5>Bitcoin Spot ETF Inflows Surpass Expectations</h5>
+                    <p>Record-breaking $800M inflow in a single day. Institutional demand is now the primary driver of price action.</p>
+                </div>
             </div>
 
-        <div class="news-panel">
-            <h3 style="color:var(--accent); font-size:0.8rem; margin-bottom:15px;">GLOBAL WIRE</h3>
-            <div id="news-list">
-                <div class="news-item" onclick="this.classList.toggle('open')">
-                    <h4>Wall Street Braces for Inflation Data</h4>
-                    <p>Global markets are on edge as the latest CPI report is due. Analysts predict a slight cooling, which could spark a massive rally in tech stocks.</p>
-                </div>
-                <div class="news-item" onclick="this.classList.toggle('open')">
-                    <h4>Bitcoin Whales Accumulate at $65k</h4>
-                    <p>On-chain data confirms that institutional wallets have added over 50,000 BTC in the last 48 hours, signaling a strong support zone.</p>
+            <div class="saved-vault">
+                <h3 style="color:var(--gold); font-size:0.8rem; margin-bottom:15px;">SAVED VAULT 🔖</h3>
+                <div id="vault-list">
+                    <p style="color:#444; font-size:0.6rem;">No saved items yet.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <nav>
-        <div class="n-link active">TERMINAL</div>
-        <div class="n-link">WIRE</div>
-        <div class="n-link">AI ANALYST</div>
-        <div class="n-link">NETWORK</div>
-        <div class="n-link">SETTINGS</div>
+        <div class="nav-item active">Terminal</div>
+        <div class="nav-item">X-WIRE</div>
+        <div class="nav-item">AI Analyst</div>
+        <div class="nav-item">Network</div>
+        <div class="nav-item">Settings</div>
     </nav>
 
     <script>
-        // BOOT LOGIC: Hide splash after 3 seconds
+        // BOOTING ENGINE
         window.onload = () => {
             setTimeout(() => {
-                document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('splash').style.display = 'none';
-                    document.getElementById('mainApp').classList.add('visible');
-                }, 800);
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('mainApp').style.visibility = 'visible';
             }, 3000);
         };
 
-        // SAVE REEL LOGIC
-        function saveReel(btn) {
-            btn.style.color = "#D4AF37";
-            alert("Saved to REDX Vault.");
+        // SAVE LOGIC
+        function saveToVault(title) {
+            const list = document.getElementById('vault-list');
+            if(list.innerText.includes('No saved items')) list.innerHTML = '';
+            const item = document.createElement('div');
+            item.className = 'vault-item';
+            item.innerHTML = `<span>▶</span> ${title}`;
+            list.appendChild(item);
+            alert("Added to Saved Vault!");
         }
 
-        // LIVE PRICE SYNC
-        async function getPrices() {
+        // PRICE SYNC
+        async function fetchLive() {
             try {
-                const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT"]');
-                const d = await r.json();
-                document.getElementById('p-btc').innerText = '$' + Math.round(d[0].price).toLocaleString();
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT"]');
+                const data = await res.json();
+                document.getElementById('p-btc').innerText = '$' + Math.round(data[0].price).toLocaleString();
             } catch(e) {}
         }
-        setInterval(getPrices, 3000); getPrices();
+        setInterval(fetchLive, 3000); fetchLive();
+
+        // SCROLL AUTOPLAY FIX
+        const feed = document.getElementById('feed');
+        feed.addEventListener('scroll', () => {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(v => {
+                const rect = v.getBoundingClientRect();
+                if (rect.top >= 0 && rect.bottom <= window.innerHeight) v.play();
+                else v.pause();
+            });
+        });
     </script>
 </body>
 </html>
