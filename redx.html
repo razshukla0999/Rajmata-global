@@ -4,91 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>REDX | GLOBAL EMPIRE</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
+
     <style>
-        :root { --redx: #ff0000; --bg: #000; --grey: #262626; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        :root { --redx: #ff0000; --bg: #000; --grey: #1a1a1a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
+
+        /* Screens */
         .screen { display: none; height: 100vh; flex-direction: column; }
         .active { display: flex; }
-        #login-screen { justify-content: center; align-items: center; padding: 40px; }
-        .logo { font-size: 4rem; font-weight: 900; color: var(--redx); margin-bottom: 40px; }
-        .btn { width: 100%; max-width: 320px; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .google-btn { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* Login UI */
+        #login-screen { justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
+        .logo-main { font-size: 5rem; font-weight: 900; color: var(--redx); letter-spacing: -2px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(255,0,0,0.5); }
+        .google-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: 0.3s; }
+        .google-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+
+        /* Reels UI */
         #feed-container { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; }
         #feed-container::-webkit-scrollbar { display: none; }
-        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; }
+        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        nav { height: 60px; border-top: 1px solid var(--grey); display: flex; justify-content: space-around; align-items: center; background: #000; }
-        .nav-icon { font-size: 1.6rem; color: #666; cursor: pointer; }
+        
+        .reel-data { position: absolute; bottom: 80px; left: 15px; z-index: 10; }
+        .reel-sidebar { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .action-btn { font-size: 1.8rem; cursor: pointer; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+
+        /* Navigation */
+        nav { height: 65px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; }
+        .nav-item { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: #fff; }
+
+        /* HUD */
+        .status-bar { position: fixed; top: 10px; width: 100%; text-align: center; font-size: 10px; color: var(--redx); opacity: 0.6; z-index: 100; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
+    <div class="status-bar">REDX SECURE LINK | CLOUD ACTIVE</div>
+
     <div id="login-screen" class="screen active">
-        <div class="logo">REDX</div>
-        <button class="btn google-btn" onclick="core.login()">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Continue with Google
+        <div class="logo-main">REDX</div>
+        <button class="google-btn" onclick="core.login()">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20">
+            CONTINUE TO EMPIRE
         </button>
     </div>
 
     <div id="app-screen" class="screen">
         <div id="feed-container"></div>
+        
         <nav>
-            <div class="nav-icon" style="color:#fff">🏠</div>
-            <div class="nav-icon">🔍</div>
-            <div class="nav-icon">👤</div>
+            <div class="nav-item active">🏠</div>
+            <div class="nav-item">🔍</div>
+            <div class="nav-item">➕</div>
+            <div class="nav-item">👤</div>
         </nav>
     </div>
 
     <script>
-        // 🔱 TERI ASALI KEYS (From Screenshot 374)
+        // 🔱 DATABASE CONNECTION (Your Verified Config)
         const firebaseConfig = {
             apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
             authDomain: "red-x-global.firebaseapp.com",
             databaseURL: "https://red-x-global-default-rtdb.firebaseio.com",
             projectId: "red-x-global",
             storageBucket: "red-x-global.firebasestorage.app",
-            messagingSenderId: "TUMHARA_SENDER_ID", // <-- Photo mein niche reh gaya, wahan se dekh kar dalo
-            appId: "TUMHARI_APP_ID" // <-- Photo mein niche reh gaya, wahan se dekh kar dalo
+            messagingSenderId: "831636783622",
+            appId: "1:831636783622:web:92271605a0dc5150123987",
+            measurementId: "G-F7TNQ5R1FS"
         };
 
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         const core = {
-            videos: [
-                { url: 'https://v.redd.it/2z9v6p5f5m6c1/DASH_720.mp4', user: 'raz_king' },
-                { url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', user: 'empire_vibe' }
+            // Sample Trading Content
+            content: [
+                { id: 1, user: "RedX_King", url: "https://v.redd.it/2z9v6p5f5m6c1/DASH_720.mp4", desc: "Clean Breakout on Nifty! 🚀" },
+                { id: 2, user: "Trader_Empire", url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", desc: "Patience is the key. 💎" }
             ],
+
             login: function() {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).then(() => {
-                    document.getElementById('login-screen').classList.remove('active');
-                    document.getElementById('app-screen').classList.add('active');
-                    this.render();
+                auth.signInWithPopup(provider).then((result) => {
+                    console.log("Welcome to the Empire:", result.user.displayName);
+                    this.launchApp();
+                }).catch(err => {
+                    alert("Empire Access Denied: " + err.message);
                 });
             },
-            render: function() {
+
+            launchApp: function() {
+                document.getElementById('login-screen').classList.remove('active');
+                document.getElementById('app-screen').classList.add('active');
+                this.loadFeed();
+            },
+
+            loadFeed: function() {
                 const container = document.getElementById('feed-container');
-                container.innerHTML = this.videos.map(v => `
+                container.innerHTML = this.content.map(item => `
                     <div class="reel">
-                        <video loop playsinline><source src="${v.url}" type="video/mp4"></video>
-                        <div style="position:absolute; bottom:80px; left:20px;"><b>@${v.user}</b></div>
+                        <video loop playsinline onclick="core.toggleVideo(this)">
+                            <source src="${item.url}" type="video/mp4">
+                        </video>
+                        <div class="reel-data">
+                            <h3 style="color:var(--redx)">@${item.user}</h3>
+                            <p>${item.desc}</p>
+                        </div>
+                        <div class="reel-sidebar">
+                            <div class="action-btn">❤️</div>
+                            <div class="action-btn">💬</div>
+                            <div class="action-btn">🔖</div>
+                        </div>
                     </div>
                 `).join('');
                 this.initObserver();
             },
+
+            toggleVideo: function(video) {
+                if (video.paused) video.play(); else video.pause();
+            },
+
             initObserver: function() {
-                const obs = new IntersectionObserver(entries => {
-                    entries.forEach(e => { if(e.isIntersecting) e.target.querySelector('video').play(); else e.target.querySelector('video').pause(); });
-                }, { threshold: 0.8 });
-                document.querySelectorAll('.reel').forEach(r => obs.observe(r));
+                const options = { threshold: 0.7 };
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const video = entry.target.querySelector('video');
+                        if (entry.isIntersecting) {
+                            video.play().catch(() => {});
+                        } else {
+                            video.pause();
+                        }
+                    });
+                }, options);
+
+                document.querySelectorAll('.reel').forEach(reel => observer.observe(reel));
             }
         };
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged(user => {
+            if (user) core.launchApp();
+        });
     </script>
 </body>
 </html>
