@@ -3,212 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REDX | GLOBAL ACCESS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>REDX | SOCIAL ENGINE</title>
     <style>
-        :root { --accent: #ff0000; --bg: #000; --surface: #121212; --text: #fff; --grey: #8e8e8e; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+        :root { --accent: #ff0000; --bg: #000; --card: #121212; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; }
 
-        /* --- UPDATED LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;
-        }
-        .logo-font { font-family: 'Orbitron'; font-size: 3.5rem; color: var(--accent); text-shadow: 0 0 20px rgba(255,0,0,0.5); margin-bottom: 40px; }
-        
-        .login-input { width: 100%; max-width: 350px; background: #1a1a1a; border: 1px solid #333; padding: 14px; border-radius: 8px; color: #fff; margin-bottom: 12px; outline: none; }
-        .login-input:focus { border-color: var(--accent); }
+        /* INSTA UI LAYOUT */
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
+        .main-view { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .main-view::-webkit-scrollbar { display: none; }
 
-        .btn-primary { width: 100%; max-width: 350px; background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--accent); }
-
-        .divider { margin: 20px 0; color: #444; font-size: 0.75rem; width: 100%; max-width: 350px; text-align: center; border-bottom: 1px solid #222; line-height: 0.1em; }
-        .divider span { background: #000; padding: 0 10px; }
-
-        /* GOOGLE & GUEST BUTTONS */
-        .social-btn { width: 100%; max-width: 350px; background: #fff; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; margin-bottom: 12px; }
-        .guest-btn { width: 100%; max-width: 350px; background: transparent; color: var(--grey); border: 1px solid #444; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .guest-btn:hover { color: #fff; border-color: #fff; }
-
-        /* --- MAIN APP (Insta Style) --- */
-        #main-app { display: none; height: 100vh; flex-direction: column; }
-        .content-area { flex: 1; overflow-y: auto; scroll-snap-type: y mandatory; }
-        .content-area::-webkit-scrollbar { display: none; }
-
-        .reel-container { height: 100%; width: 100%; scroll-snap-align: start; position: relative; background: #000; }
+        /* REEL COMPONENT */
+        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; }
         video { width: 100%; height: 100%; object-fit: cover; }
         
-        .reel-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 70%, rgba(0,0,0,0.9)); pointer-events: none; }
-        .reel-meta { position: absolute; bottom: 80px; left: 15px; width: 70%; z-index: 10; }
-        .user-tag { display: flex; align-items: center; gap: 10px; font-weight: 600; margin-bottom: 8px; }
-        .user-tag img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); }
-        
-        .reel-actions { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
-        .action-unit { text-align: center; font-size: 0.7rem; color: #fff; }
-        .action-unit span { font-size: 1.8rem; display: block; margin-bottom: 4px; cursor: pointer; }
+        .reel-details { position: absolute; bottom: 80px; left: 15px; z-index: 5; }
+        .side-bar { position: absolute; right: 10px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
 
-        /* --- NAV --- */
-        nav { height: 65px; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; align-items: center; padding-bottom: 10px; }
-        .nav-item { color: #fff; font-size: 1.5rem; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
+        /* NAV BAR */
+        nav { height: 60px; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; align-items: center; }
+        .nav-icon { font-size: 1.5rem; opacity: 0.6; cursor: pointer; }
+        .active { opacity: 1; color: var(--accent); }
 
-        /* --- RISK HUD --- */
-        .risk-hud { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 5px 20px; border-radius: 20px; font-size: 0.7rem; font-family: 'Orbitron'; backdrop-filter: blur(10px); z-index: 1000; pointer-events: none; color: #fff; }
+        /* SEARCH / EXPLORE OVERLAY */
+        #explore-view { display: none; padding: 10px; overflow-y: auto; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .grid-item { aspect-ratio: 1/1; background: #222; overflow: hidden; }
     </style>
 </head>
 <body>
 
-    <div class="risk-hud">
-        TRADES: <span id="global-trades">0</span>/5 | <span style="color:var(--accent)">PROTECTION ACTIVE</span>
-    </div>
-
-    <div id="login-screen">
-        <div class="logo-font">REDX</div>
-        
-        <input type="text" id="user-in" class="login-input" placeholder="Phone, username, or email">
-        <input type="password" class="login-input" placeholder="Password">
-        <button class="btn-primary" onclick="enterApp('member')">Log In</button>
-
-        <div class="divider"><span>OR</span></div>
-
-        <button class="social-btn" onclick="enterApp('google')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Continue with Google
-        </button>
-
-        <button class="guest-btn" onclick="enterApp('guest')">Explore as Guest</button>
-        
-        <p style="margin-top: 30px; font-size: 0.8rem; color: var(--grey);">
-            Don't have an account? <span style="color: var(--accent); font-weight: bold;">Sign up</span>
-        </p>
-    </div>
-
-    <div id="main-app">
-        <div id="viewport" style="flex:1; position:relative;">
-            
-            <div id="page-reels" class="content-area" style="height:100%;">
-                </div>
-
-            <div id="page-chat" style="display:none; padding:20px;">
-                <h2 style="font-family:'Orbitron'; margin-bottom:20px;">Direct Messages</h2>
-                <p style="color:var(--grey);">Guest mode has limited messaging. Please sign in.</p>
+    <div class="app-container">
+        <div id="home-view" class="main-view">
             </div>
+
+        <div id="explore-view" class="main-view">
+            <input type="text" placeholder="Search" style="width:100%; padding:10px; border-radius:8px; border:none; background:#222; color:#fff; margin-bottom:10px;">
+            <div class="grid" id="explore-grid"></div>
         </div>
 
         <nav>
-            <div class="nav-item active" onclick="switchPage('reels', this)">🏠</div>
-            <div class="nav-item">🔍</div>
-            <div class="nav-item" onclick="logTrade()">➕</div>
-            <div class="nav-item" onclick="switchPage('chat', this)">💬</div>
-            <div class="nav-item">👤</div>
+            <div class="nav-icon active" onclick="showTab('home')">🏠</div>
+            <div class="nav-icon" onclick="showTab('explore')">🔍</div>
+            <div class="nav-icon">➕</div>
+            <div class="nav-icon">👤</div>
         </nav>
     </div>
 
     <script>
-        const videoSources = [
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        // SMART DATA: Category Based Content
+        const videoPool = [
+            { id: 1, cat: 'trading', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', user: 'raz_trader' },
+            { id: 2, cat: 'luxury', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', user: 'empire_vibe' },
+            { id: 3, cat: 'trading', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', user: 'chart_master' }
         ];
 
-        let userMode = "guest";
+        let userMood = { trading: 0, luxury: 0 }; // Track user interest
 
-        // --- LOGIN LOGIC ---
-        function enterApp(mode) {
-            userMode = mode;
-            document.getElementById('login-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
-                initInfiniteReels();
-                
-                if(mode === 'guest') {
-                    alert("Welcome! You are exploring as a Guest.");
-                } else if(mode === 'google') {
-                    alert("Google Login Successful. Syncing profile...");
-                }
-            }, 500);
-        }
+        function renderFeed() {
+            const feed = document.getElementById('home-view');
+            // Algorithm: Sort by user mood
+            const sortedContent = [...videoPool].sort((a, b) => (userMood[b.cat] || 0) - (userMood[a.cat] || 0));
 
-        // --- INFINITE REEL ENGINE ---
-        function initInfiniteReels() {
-            const container = document.getElementById('page-reels');
-            // Load 10 initial reels
-            for(let i=0; i<10; i++) {
-                addReel(container);
-            }
-            setTimeout(() => { 
-                const firstVid = document.querySelector('video');
-                if(firstVid) firstVid.play(); 
-            }, 600);
-        }
-
-        function addReel(container) {
-            const src = videoSources[Math.floor(Math.random() * videoSources.length)];
-            const reel = document.createElement('div');
-            reel.className = 'reel-container';
-            reel.innerHTML = `
-                <video loop playsinline onclick="this.paused ? this.play() : this.pause()">
-                    <source src="${src}" type="video/mp4">
-                </video>
-                <div class="reel-overlay"></div>
-                <div class="reel-meta">
-                    <div class="user-tag">
-                        <div style="width:30px; height:30px; background:var(--accent); border-radius:50%;"></div>
-                        <span>raz_official • Follow</span>
+            feed.innerHTML = sortedContent.map(vid => `
+                <div class="reel" data-cat="${vid.cat}">
+                    <video loop playsinline onplay="trackInterest('${vid.cat}')">
+                        <source src="${vid.url}" type="video/mp4">
+                    </video>
+                    <div class="reel-details">
+                        <b>@${vid.user}</b>
+                        <p>Mood Targeted Content: ${vid.cat}</p>
                     </div>
-                    <p style="font-size:0.85rem;">System Intelligence: Node Khajuraho active. #REDX #Trading</p>
+                    <div class="side-bar">
+                        <div onclick="trackInterest('${vid.cat}', 5)">❤️</div>
+                        <div>💬</div>
+                    </div>
                 </div>
-                <div class="reel-actions">
-                    <div class="action-unit"><span onclick="this.style.color='red'">❤️</span>42K</div>
-                    <div class="action-unit"><span>💬</span>128</div>
-                    <div class="action-unit"><span>🔖</span></div>
-                    <div class="action-unit"><span>🔗</span></div>
-                </div>`;
-            container.appendChild(reel);
+            `).join('');
         }
 
-        // --- APP LOGIC ---
-        function switchPage(page, el) {
-            document.getElementById('page-reels').style.display = page === 'reels' ? 'block' : 'none';
-            document.getElementById('page-chat').style.display = page === 'chat' ? 'block' : 'none';
-            
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-
-            if(page !== 'reels') {
-                document.querySelectorAll('video').forEach(v => v.pause());
-            } else {
-                document.querySelector('video').play();
-            }
+        function trackInterest(cat, weight = 1) {
+            userMood[cat] += weight;
+            console.log("Updated Mood Map:", userMood);
         }
 
-        let tradeCount = 0;
-        function logTrade() {
-            if(userMode === 'guest') {
-                alert("Login required to log trades and access REDX Protector.");
-                return;
-            }
-            tradeCount++;
-            document.getElementById('global-trades').innerText = tradeCount;
-            if(tradeCount >= 5) alert("🔴 OVERTRADING ALERT: Raz, stop now!");
+        function showTab(tab) {
+            document.getElementById('home-view').style.display = tab === 'home' ? 'block' : 'none';
+            document.getElementById('explore-view').style.display = tab === 'explore' ? 'block' : 'none';
         }
 
-        // Scroll Auto-Play & Infinite Loop
-        document.getElementById('page-reels').addEventListener('scroll', function() {
-            const vids = this.querySelectorAll('video');
-            vids.forEach(v => {
-                const rect = v.getBoundingClientRect();
-                if(rect.top >= 0 && rect.bottom <= window.innerHeight) v.play();
-                else v.pause();
+        // Initialize
+        renderFeed();
+        
+        // Auto-Play Logic
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                const v = e.target.querySelector('video');
+                if(e.isIntersecting) v.play(); else v.pause();
             });
+        }, { threshold: 0.7 });
 
-            if(this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
-                for(let i=0; i<5; i++) addReel(this);
-            }
-        });
+        document.querySelectorAll('.reel').forEach(r => observer.observe(r));
+
     </script>
 </body>
 </html>
