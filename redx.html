@@ -3,108 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REDX | SOCIAL ENGINE</title>
+    <title>REDX | GLOBAL EMPIRE</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
     <style>
-        :root { --accent: #ff0000; --bg: #000; --card: #121212; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; }
-
-        /* INSTA UI LAYOUT */
-        .app-container { display: flex; flex-direction: column; height: 100vh; }
-        .main-view { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .main-view::-webkit-scrollbar { display: none; }
-
-        /* REEL COMPONENT */
-        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; }
+        :root { --redx: #ff0000; --bg: #000; --grey: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
+        .screen { display: none; height: 100vh; flex-direction: column; }
+        .active { display: flex; }
+        #login-screen { justify-content: center; align-items: center; padding: 40px; }
+        .logo { font-size: 4rem; font-weight: 900; color: var(--redx); margin-bottom: 40px; }
+        .btn { width: 100%; max-width: 320px; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .google-btn { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        #feed-container { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        #feed-container::-webkit-scrollbar { display: none; }
+        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        
-        .reel-details { position: absolute; bottom: 80px; left: 15px; z-index: 5; }
-        .side-bar { position: absolute; right: 10px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-
-        /* NAV BAR */
-        nav { height: 60px; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; align-items: center; }
-        .nav-icon { font-size: 1.5rem; opacity: 0.6; cursor: pointer; }
-        .active { opacity: 1; color: var(--accent); }
-
-        /* SEARCH / EXPLORE OVERLAY */
-        #explore-view { display: none; padding: 10px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .grid-item { aspect-ratio: 1/1; background: #222; overflow: hidden; }
+        nav { height: 60px; border-top: 1px solid var(--grey); display: flex; justify-content: space-around; align-items: center; background: #000; }
+        .nav-icon { font-size: 1.6rem; color: #666; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div id="home-view" class="main-view">
-            </div>
+    <div id="login-screen" class="screen active">
+        <div class="logo">REDX</div>
+        <button class="btn google-btn" onclick="core.login()">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Continue with Google
+        </button>
+    </div>
 
-        <div id="explore-view" class="main-view">
-            <input type="text" placeholder="Search" style="width:100%; padding:10px; border-radius:8px; border:none; background:#222; color:#fff; margin-bottom:10px;">
-            <div class="grid" id="explore-grid"></div>
-        </div>
-
+    <div id="app-screen" class="screen">
+        <div id="feed-container"></div>
         <nav>
-            <div class="nav-icon active" onclick="showTab('home')">🏠</div>
-            <div class="nav-icon" onclick="showTab('explore')">🔍</div>
-            <div class="nav-icon">➕</div>
+            <div class="nav-icon" style="color:#fff">🏠</div>
+            <div class="nav-icon">🔍</div>
             <div class="nav-icon">👤</div>
         </nav>
     </div>
 
     <script>
-        // SMART DATA: Category Based Content
-        const videoPool = [
-            { id: 1, cat: 'trading', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', user: 'raz_trader' },
-            { id: 2, cat: 'luxury', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', user: 'empire_vibe' },
-            { id: 3, cat: 'trading', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', user: 'chart_master' }
-        ];
+        // 🔱 TERI ASALI KEYS (From Screenshot 374)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
+            authDomain: "red-x-global.firebaseapp.com",
+            databaseURL: "https://red-x-global-default-rtdb.firebaseio.com",
+            projectId: "red-x-global",
+            storageBucket: "red-x-global.firebasestorage.app",
+            messagingSenderId: "TUMHARA_SENDER_ID", // <-- Photo mein niche reh gaya, wahan se dekh kar dalo
+            appId: "TUMHARI_APP_ID" // <-- Photo mein niche reh gaya, wahan se dekh kar dalo
+        };
 
-        let userMood = { trading: 0, luxury: 0 }; // Track user interest
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        function renderFeed() {
-            const feed = document.getElementById('home-view');
-            // Algorithm: Sort by user mood
-            const sortedContent = [...videoPool].sort((a, b) => (userMood[b.cat] || 0) - (userMood[a.cat] || 0));
-
-            feed.innerHTML = sortedContent.map(vid => `
-                <div class="reel" data-cat="${vid.cat}">
-                    <video loop playsinline onplay="trackInterest('${vid.cat}')">
-                        <source src="${vid.url}" type="video/mp4">
-                    </video>
-                    <div class="reel-details">
-                        <b>@${vid.user}</b>
-                        <p>Mood Targeted Content: ${vid.cat}</p>
+        const core = {
+            videos: [
+                { url: 'https://v.redd.it/2z9v6p5f5m6c1/DASH_720.mp4', user: 'raz_king' },
+                { url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', user: 'empire_vibe' }
+            ],
+            login: function() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider).then(() => {
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('app-screen').classList.add('active');
+                    this.render();
+                });
+            },
+            render: function() {
+                const container = document.getElementById('feed-container');
+                container.innerHTML = this.videos.map(v => `
+                    <div class="reel">
+                        <video loop playsinline><source src="${v.url}" type="video/mp4"></video>
+                        <div style="position:absolute; bottom:80px; left:20px;"><b>@${v.user}</b></div>
                     </div>
-                    <div class="side-bar">
-                        <div onclick="trackInterest('${vid.cat}', 5)">❤️</div>
-                        <div>💬</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function trackInterest(cat, weight = 1) {
-            userMood[cat] += weight;
-            console.log("Updated Mood Map:", userMood);
-        }
-
-        function showTab(tab) {
-            document.getElementById('home-view').style.display = tab === 'home' ? 'block' : 'none';
-            document.getElementById('explore-view').style.display = tab === 'explore' ? 'block' : 'none';
-        }
-
-        // Initialize
-        renderFeed();
-        
-        // Auto-Play Logic
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                const v = e.target.querySelector('video');
-                if(e.isIntersecting) v.play(); else v.pause();
-            });
-        }, { threshold: 0.7 });
-
-        document.querySelectorAll('.reel').forEach(r => observer.observe(r));
-
+                `).join('');
+                this.initObserver();
+            },
+            initObserver: function() {
+                const obs = new IntersectionObserver(entries => {
+                    entries.forEach(e => { if(e.isIntersecting) e.target.querySelector('video').play(); else e.target.querySelector('video').pause(); });
+                }, { threshold: 0.8 });
+                document.querySelectorAll('.reel').forEach(r => obs.observe(r));
+            }
+        };
     </script>
 </body>
 </html>
