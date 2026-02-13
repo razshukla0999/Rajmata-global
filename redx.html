@@ -3,124 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REDX | INSTA-MODE</title>
+    <title>REDX | THE TRADING EMPIRE</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --redx: #ff3b3b; --ig-grey: #262626; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #000; color: #fff; height: 100vh; overflow: hidden; }
+        :root { --redx: #ff0000; --glass: rgba(255, 255, 255, 0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; height: 100vh; overflow: hidden; }
 
-        /* Reels Container */
-        #reels-app { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        #reels-app::-webkit-scrollbar { display: none; }
+        /* Full Screen Reel Engine */
+        #reels-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+        #reels-container::-webkit-scrollbar { display: none; }
 
-        .reel-video-container { 
-            height: 100vh; 
-            width: 100vw; 
-            scroll-snap-align: start; 
-            position: relative; 
-            display: flex; 
-            align-items: center; 
+        .reel {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
             justify-content: center;
         }
 
-        video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Instagram Style Overlay */
-        .ui-overlay {
-            position: absolute;
-            bottom: 80px;
-            left: 0;
+        video {
             width: 100%;
-            padding: 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            z-index: 10;
+            height: 100%;
+            object-fit: cover; /* Instagram Style */
         }
 
-        .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .user-info img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--redx); }
-        .user-info span { font-weight: 600; font-size: 0.9rem; }
-        .description { font-size: 0.85rem; opacity: 0.9; margin-left: 5px; }
+        /* UI Overlays */
+        .reel-overlay {
+            position: absolute;
+            bottom: 80px;
+            left: 15px;
+            right: 70px;
+            z-index: 10;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
 
-        /* Sidebar Actions */
+        .user-tag { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .user-tag img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--redx); }
+        .user-tag h4 { font-size: 0.95rem; font-weight: 600; }
+
+        .description { font-size: 0.85rem; line-height: 1.3; opacity: 0.9; }
+
+        /* Sidebar Actions (Instagram Style) */
         .sidebar {
             position: absolute;
-            right: 15px;
+            right: 12px;
             bottom: 100px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
             align-items: center;
             z-index: 20;
         }
         .action-item { text-align: center; cursor: pointer; }
-        .action-item i { font-size: 28px; display: block; margin-bottom: 5px; }
-        .action-item span { font-size: 12px; font-weight: 400; }
+        .action-item span { font-size: 28px; display: block; margin-bottom: 4px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+        .action-item p { font-size: 11px; font-weight: 600; }
 
-        /* Bottom Nav */
+        /* Bottom Navigation Bar */
         nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            height: 60px;
-            background: #000;
-            border-top: 0.5px solid #333;
+            height: 65px;
+            background: linear-gradient(transparent, #000);
             display: flex;
             justify-content: space-around;
             align-items: center;
+            border-top: 0.1px solid rgba(255,255,255,0.1);
             z-index: 100;
         }
-        .nav-icon { font-size: 24px; color: #fff; opacity: 0.7; cursor: pointer; }
-        .nav-icon.active { opacity: 1; }
+        .nav-btn { font-size: 24px; color: #fff; opacity: 0.6; cursor: pointer; transition: 0.2s; }
+        .nav-btn.active { opacity: 1; transform: scale(1.1); }
 
         /* Login Modal */
-        #login-modal {
+        #login-gate {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 200;
-            flex-direction: column;
-            align-items: center;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
             justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
         }
-        .login-box { background: #121212; padding: 40px; border-radius: 12px; text-align: center; width: 85%; max-width: 400px; border: 1px solid #333; }
-        .google-login-btn { 
-            background: #fff; color: #000; border: none; padding: 12px 24px; 
-            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px;
-            display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center;
+        .login-card {
+            background: #111;
+            padding: 40px 30px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid #333;
+            width: 85%;
+            max-width: 350px;
+        }
+        .login-card h2 { color: var(--redx); font-size: 2.5rem; margin-bottom: 10px; letter-spacing: -1px; }
+        .g-btn {
+            background: #fff; color: #000; border: none; padding: 14px;
+            border-radius: 12px; font-weight: bold; width: 100%;
+            margin-top: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div id="reels-app"></div>
+    <div id="reels-container"></div>
 
     <nav>
-        <div class="nav-icon active">🏠</div>
-        <div class="nav-icon">🔍</div>
-        <div class="nav-icon" onclick="manager.showLogin()">➕</div>
-        <div class="nav-icon" onclick="manager.showLogin()">👤</div>
+        <div class="nav-btn active">🏠</div>
+        <div class="nav-btn" onclick="ui.showLogin()">🔍</div>
+        <div class="nav-btn" onclick="ui.showLogin()" style="color:var(--redx)">➕</div>
+        <div class="nav-btn" onclick="ui.showLogin()">👤</div>
     </nav>
 
-    <div id="login-modal">
-        <div class="login-box">
-            <h2 style="margin-bottom: 10px; color: var(--redx)">REDX Empire</h2>
-            <p style="color: #8e8e8e; font-size: 14px;">Login to interact with traders</p>
-            <button class="google-login-btn" onclick="manager.login()">
+    <div id="login-gate">
+        <div class="login-card">
+            <h2>REDX</h2>
+            <p style="color:#888; font-size: 14px;">Master the Markets. Join the Empire.</p>
+            <button class="g-btn" onclick="authManager.login()">
                 <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18">
                 Continue with Google
             </button>
-            <p style="margin-top: 20px; font-size: 12px; color: #555; cursor: pointer;" onclick="manager.hideLogin()">Not now</p>
+            <p onclick="ui.hideLogin()" style="margin-top:20px; color:#555; cursor:pointer; font-size: 13px;">Skip for now</p>
         </div>
     </div>
 
     <script>
-        // 🔱 DATABASE CONNECTION
+        // 🔱 FIREBASE SHIELD (Your Verified Config)
         const firebaseConfig = {
             apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
             authDomain: "red-x-global.firebaseapp.com",
@@ -129,77 +147,89 @@
             messagingSenderId: "831636783622",
             appId: "1:831636783622:web:92271605a0dc5150123987"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        const manager = {
-            // Infinite Reel Samples
-            reelsData: [
-                { id: 1, user: 'RedX_Master', desc: 'Breakout Strategy 2026 📈', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', likes: '12k' },
-                { id: 2, user: 'Trading_King', desc: 'Price Action is God. 🔥', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', likes: '45k' },
-                { id: 3, user: 'Market_Shark', desc: 'Discipline > Talent. 🔱', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', likes: '8k' }
-            ],
+        // 🔱 TRADING REELS ENGINE (Infinite Pool)
+        const tradingContent = [
+            { user: 'Nifty_Elite', desc: 'Price Action at 9:15 AM 🔥 #Trading #Nifty', video: 'https://v16-webapp.tiktokcdn-us.com/...' }, // Placeholder for logic
+            { user: 'Chart_Master', desc: 'Discipline is the only secret. 🔱', video: '...' }
+        ];
 
+        // High-Quality Global Trading Video Links (Stable CDNs)
+        const stableVideos = [
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        ];
+
+        const ui = {
             init: function() {
-                this.render();
-                this.setupObserver();
+                this.renderInfiniteFeed();
+                this.setupVideoLogic();
             },
 
-            render: function() {
-                const container = document.getElementById('reels-app');
-                container.innerHTML = this.reelsData.map(reel => `
-                    <div class="reel-video-container">
-                        <video loop playsinline onclick="this.paused ? this.play() : this.pause()">
-                            <source src="${reel.video}" type="video/mp4">
-                        </video>
-                        
-                        <div class="sidebar">
-                            <div class="action-item"><span>❤️</span><p>${reel.likes}</p></div>
-                            <div class="action-item"><span>💬</span><p>234</p></div>
-                            <div class="action-item"><span>✈️</span></div>
-                            <div class="action-item"><span>...</span></div>
-                        </div>
-
-                        <div class="ui-overlay">
-                            <div class="user-info">
-                                <img src="https://ui-avatars.com/api/?name=${reel.user}&background=random">
-                                <span>${reel.user} • Follow</span>
+            renderInfiniteFeed: function() {
+                const container = document.getElementById('reels-container');
+                // Creating 20 initial reels for a smooth start
+                for(let i=0; i<20; i++) {
+                    const videoUrl = stableVideos[i % stableVideos.length];
+                    const userName = `Trader_Ex_${i+1}`;
+                    container.innerHTML += `
+                        <div class="reel">
+                            <video loop playsinline muted onclick="this.paused ? this.play() : this.pause()">
+                                <source src="${videoUrl}" type="video/mp4">
+                            </video>
+                            <div class="sidebar">
+                                <div class="action-item"><span>❤️</span><p>${(Math.random()*50).toFixed(1)}k</p></div>
+                                <div class="action-item"><span>💬</span><p>${Math.floor(Math.random()*500)}</p></div>
+                                <div class="action-item"><span>✈️</span></div>
+                                <div class="action-item"><span>🔖</span></div>
                             </div>
-                            <p class="description">${reel.desc}</p>
+                            <div class="reel-overlay">
+                                <div class="user-tag">
+                                    <img src="https://ui-avatars.com/api/?name=${userName}&background=random">
+                                    <h4>${userName} • Follow</h4>
+                                </div>
+                                <p class="description">Live Market Analysis: Testing the support at 21800. Watch till the end! 🚀 #StockMarket #RedX</p>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }
             },
 
-            setupObserver: function() {
+            setupVideoLogic: function() {
                 const observer = new IntersectionObserver(entries => {
-                    entries.forEach(e => {
-                        const v = e.target.querySelector('video');
-                        if(e.isIntersecting) { 
-                            v.play().catch(() => {});
-                            v.muted = false;
-                        } else { 
-                            v.pause(); 
+                    entries.forEach(entry => {
+                        const video = entry.target.querySelector('video');
+                        if (entry.isIntersecting) {
+                            video.play().catch(() => {});
+                            video.muted = false; // Auto-unmute on scroll
+                        } else {
+                            video.pause();
                         }
                     });
-                }, { threshold: 0.7 });
-                document.querySelectorAll('.reel-video-container').forEach(r => observer.observe(r));
+                }, { threshold: 0.8 });
+
+                document.querySelectorAll('.reel').forEach(reel => observer.observe(reel));
             },
 
-            showLogin: () => document.getElementById('login-modal').style.display = 'flex',
-            hideLogin: () => document.getElementById('login-modal').style.display = 'none',
+            showLogin: () => document.getElementById('login-gate').style.display = 'flex',
+            hideLogin: () => document.getElementById('login-gate').style.display = 'none'
+        };
 
+        const authManager = {
             login: function() {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 auth.signInWithPopup(provider).then(() => {
                     location.reload();
-                }).catch(err => alert("Access Denied: " + err.message));
+                }).catch(err => alert("Empire Login Failed: " + err.message));
             }
         };
 
-        // Start App
-        manager.init();
+        // Start Empire
+        ui.init();
     </script>
 </body>
 </html>
