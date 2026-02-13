@@ -10,50 +10,54 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --redx: #ff0000; --bg: #000; --grey: #1a1a1a; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        :root { --redx: #ff0000; --bg: #000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
 
         /* Navigation */
-        nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: rgba(0,0,0,0.9); border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-        .nav-item { font-size: 1.5rem; color: #555; cursor: pointer; }
-        .nav-item.active { color: #fff; }
+        nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { font-size: 1.8rem; color: #666; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
 
-        /* Reels Container */
-        #feed-container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        #feed-container::-webkit-scrollbar { display: none; }
-        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; background: #000; }
+        /* Reels Section */
+        #feed { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        #feed::-webkit-scrollbar { display: none; }
+        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
         
-        .reel-overlay { position: absolute; bottom: 85px; left: 15px; z-index: 10; width: 80%; }
-        .sidebar { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; }
+        .overlay { position: absolute; bottom: 90px; left: 20px; z-index: 10; }
+        .sidebar { position: absolute; right: 20px; bottom: 150px; display: flex; flex-direction: column; gap: 25px; align-items: center; }
 
-        /* Login Modal (Hidden by default) */
-        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
-        .google-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        /* Login Modal */
+        #login-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        .login-card { background: #111; padding: 40px; border-radius: 20px; text-align: center; border: 1px solid #333; }
+        .g-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="feed-container"></div>
+    <div id="feed"></div>
 
     <nav>
         <div class="nav-item active">🏠</div>
         <div class="nav-item">🔍</div>
-        <div class="nav-item" onclick="core.checkLoginForAction()">➕</div>
-        <div class="nav-item" onclick="core.showLogin()">👤</div>
+        <div class="nav-item" onclick="app.showLogin()">➕</div>
+        <div class="nav-item" onclick="app.showLogin()">👤</div>
     </nav>
 
     <div id="login-modal">
-        <h1 style="color:var(--redx); font-size: 3rem; margin-bottom: 20px;">REDX</h1>
-        <p style="margin-bottom: 30px;">Login to Join the Empire</p>
-        <button class="google-btn" onclick="core.login()">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20"> CONTINUE WITH GOOGLE
-        </button>
-        <p onclick="document.getElementById('login-modal').style.display='none'" style="margin-top:20px; color:#666; cursor:pointer;">Cancel</p>
+        <div class="login-card">
+            <h1 style="color:var(--redx); font-size: 3rem;">REDX</h1>
+            <p>Join the Elite Traders</p>
+            <button class="g-btn" onclick="app.login()">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20"> Continue with Google
+            </button>
+            <p onclick="app.hideLogin()" style="color:#555; margin-top:15px; cursor:pointer;">Maybe Later</p>
+        </div>
     </div>
 
     <script>
+        // 🔱 ASALI CONFIG (Verified from your screenshots)
         const firebaseConfig = {
             apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
             authDomain: "red-x-global.firebaseapp.com",
@@ -66,26 +70,25 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        const core = {
-            // Test Content (YouTube Shorts Style)
-            reels: [
-                { user: 'RedX_Official', desc: 'Welcome to the Trading Empire 🔱', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4' },
-                { user: 'Nifty_Hunter', desc: 'Price Action at its best! 🔥', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' }
+        const app = {
+            data: [
+                { user: 'RedX_Founder', desc: 'The Empire begins here... 🔱', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4' },
+                { user: 'Trading_Pro', desc: 'Market analysis for today! 📈', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' }
             ],
 
             init: function() {
-                this.renderReels();
-                this.setupVideoObserver();
+                this.render();
+                this.observe();
             },
 
-            renderReels: function() {
-                const container = document.getElementById('feed-container');
-                container.innerHTML = this.reels.map(r => `
+            render: function() {
+                const feed = document.getElementById('feed');
+                feed.innerHTML = this.data.map(r => `
                     <div class="reel">
-                        <video loop playsinline muted onclick="this.paused ? this.play() : this.pause()">
+                        <video loop playsinline onclick="this.paused ? this.play() : this.pause()">
                             <source src="${r.url}" type="video/mp4">
                         </video>
-                        <div class="reel-overlay">
+                        <div class="overlay">
                             <h3 style="color:var(--redx)">@${r.user}</h3>
                             <p>${r.desc}</p>
                         </div>
@@ -97,38 +100,29 @@
                 `).join('');
             },
 
-            setupVideoObserver: function() {
+            observe: function() {
                 const obs = new IntersectionObserver(entries => {
                     entries.forEach(e => {
                         const v = e.target.querySelector('video');
-                        if(e.isIntersecting) { v.play().catch(()=>{}); v.muted = false; }
+                        if(e.isIntersecting) { v.play().catch(()=>{}); }
                         else { v.pause(); }
                     });
                 }, { threshold: 0.8 });
-                document.querySelectorAll('.reel').forEach(reel => obs.observe(reel));
+                document.querySelectorAll('.reel').forEach(r => obs.observe(r));
             },
 
-            showLogin: function() {
-                document.getElementById('login-modal').style.display = 'flex';
-            },
-
-            checkLoginForAction: function() {
-                if(!auth.currentUser) {
-                    this.showLogin();
-                } else {
-                    alert("Ready to upload!");
-                }
-            },
+            showLogin: () => document.getElementById('login-modal').style.display = 'flex',
+            hideLogin: () => document.getElementById('login-modal').style.display = 'none',
 
             login: function() {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).then(() => {
-                    location.reload(); // Reload to refresh state
-                }).catch(err => alert("Error: " + err.message));
+                auth.signInWithPopup(provider)
+                    .then(() => location.reload())
+                    .catch(err => alert("Error: " + err.message));
             }
         };
 
-        core.init();
+        app.init();
     </script>
 </body>
 </html>
