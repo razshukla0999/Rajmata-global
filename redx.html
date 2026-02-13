@@ -3,61 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REDX | GLOBAL EMPIRE</title>
+    <title>REDX | INSTA-MODE</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --redx: #ff0000; --bg: #000; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
+        :root { --redx: #ff3b3b; --ig-grey: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #000; color: #fff; height: 100vh; overflow: hidden; }
 
-        /* Navigation */
-        nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { font-size: 1.8rem; color: #666; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: #fff; text-shadow: 0 0 10px #fff; }
+        /* Reels Container */
+        #reels-app { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        #reels-app::-webkit-scrollbar { display: none; }
 
-        /* Reels Section */
-        #feed { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        #feed::-webkit-scrollbar { display: none; }
-        .reel { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }
+        .reel-video-container { 
+            height: 100vh; 
+            width: 100vw; 
+            scroll-snap-align: start; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+
         video { width: 100%; height: 100%; object-fit: cover; }
-        
-        .overlay { position: absolute; bottom: 90px; left: 20px; z-index: 10; }
-        .sidebar { position: absolute; right: 20px; bottom: 150px; display: flex; flex-direction: column; gap: 25px; align-items: center; }
+
+        /* Instagram Style Overlay */
+        .ui-overlay {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            z-index: 10;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .user-info img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--redx); }
+        .user-info span { font-weight: 600; font-size: 0.9rem; }
+        .description { font-size: 0.85rem; opacity: 0.9; margin-left: 5px; }
+
+        /* Sidebar Actions */
+        .sidebar {
+            position: absolute;
+            right: 15px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            z-index: 20;
+        }
+        .action-item { text-align: center; cursor: pointer; }
+        .action-item i { font-size: 28px; display: block; margin-bottom: 5px; }
+        .action-item span { font-size: 12px; font-weight: 400; }
+
+        /* Bottom Nav */
+        nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #000;
+            border-top: 0.5px solid #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-icon { font-size: 24px; color: #fff; opacity: 0.7; cursor: pointer; }
+        .nav-icon.active { opacity: 1; }
 
         /* Login Modal */
-        #login-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
-        .login-card { background: #111; padding: 40px; border-radius: 20px; text-align: center; border: 1px solid #333; }
-        .g-btn { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+        #login-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box { background: #121212; padding: 40px; border-radius: 12px; text-align: center; width: 85%; max-width: 400px; border: 1px solid #333; }
+        .google-login-btn { 
+            background: #fff; color: #000; border: none; padding: 12px 24px; 
+            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px;
+            display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center;
+        }
     </style>
 </head>
 <body>
 
-    <div id="feed"></div>
+    <div id="reels-app"></div>
 
     <nav>
-        <div class="nav-item active">🏠</div>
-        <div class="nav-item">🔍</div>
-        <div class="nav-item" onclick="app.showLogin()">➕</div>
-        <div class="nav-item" onclick="app.showLogin()">👤</div>
+        <div class="nav-icon active">🏠</div>
+        <div class="nav-icon">🔍</div>
+        <div class="nav-icon" onclick="manager.showLogin()">➕</div>
+        <div class="nav-icon" onclick="manager.showLogin()">👤</div>
     </nav>
 
     <div id="login-modal">
-        <div class="login-card">
-            <h1 style="color:var(--redx); font-size: 3rem;">REDX</h1>
-            <p>Join the Elite Traders</p>
-            <button class="g-btn" onclick="app.login()">
-                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20"> Continue with Google
+        <div class="login-box">
+            <h2 style="margin-bottom: 10px; color: var(--redx)">REDX Empire</h2>
+            <p style="color: #8e8e8e; font-size: 14px;">Login to interact with traders</p>
+            <button class="google-login-btn" onclick="manager.login()">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18">
+                Continue with Google
             </button>
-            <p onclick="app.hideLogin()" style="color:#555; margin-top:15px; cursor:pointer;">Maybe Later</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #555; cursor: pointer;" onclick="manager.hideLogin()">Not now</p>
         </div>
     </div>
 
     <script>
-        // 🔱 ASALI CONFIG (Verified from your screenshots)
+        // 🔱 DATABASE CONNECTION
         const firebaseConfig = {
             apiKey: "AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
             authDomain: "red-x-global.firebaseapp.com",
@@ -70,45 +133,58 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        const app = {
-            data: [
-                { user: 'RedX_Founder', desc: 'The Empire begins here... 🔱', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4' },
-                { user: 'Trading_Pro', desc: 'Market analysis for today! 📈', url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' }
+        const manager = {
+            // Infinite Reel Samples
+            reelsData: [
+                { id: 1, user: 'RedX_Master', desc: 'Breakout Strategy 2026 📈', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', likes: '12k' },
+                { id: 2, user: 'Trading_King', desc: 'Price Action is God. 🔥', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', likes: '45k' },
+                { id: 3, user: 'Market_Shark', desc: 'Discipline > Talent. 🔱', video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', likes: '8k' }
             ],
 
             init: function() {
                 this.render();
-                this.observe();
+                this.setupObserver();
             },
 
             render: function() {
-                const feed = document.getElementById('feed');
-                feed.innerHTML = this.data.map(r => `
-                    <div class="reel">
+                const container = document.getElementById('reels-app');
+                container.innerHTML = this.reelsData.map(reel => `
+                    <div class="reel-video-container">
                         <video loop playsinline onclick="this.paused ? this.play() : this.pause()">
-                            <source src="${r.url}" type="video/mp4">
+                            <source src="${reel.video}" type="video/mp4">
                         </video>
-                        <div class="overlay">
-                            <h3 style="color:var(--redx)">@${r.user}</h3>
-                            <p>${r.desc}</p>
-                        </div>
+                        
                         <div class="sidebar">
-                            <div style="font-size:2rem">❤️</div>
-                            <div style="font-size:2rem">💬</div>
+                            <div class="action-item"><span>❤️</span><p>${reel.likes}</p></div>
+                            <div class="action-item"><span>💬</span><p>234</p></div>
+                            <div class="action-item"><span>✈️</span></div>
+                            <div class="action-item"><span>...</span></div>
+                        </div>
+
+                        <div class="ui-overlay">
+                            <div class="user-info">
+                                <img src="https://ui-avatars.com/api/?name=${reel.user}&background=random">
+                                <span>${reel.user} • Follow</span>
+                            </div>
+                            <p class="description">${reel.desc}</p>
                         </div>
                     </div>
                 `).join('');
             },
 
-            observe: function() {
-                const obs = new IntersectionObserver(entries => {
+            setupObserver: function() {
+                const observer = new IntersectionObserver(entries => {
                     entries.forEach(e => {
                         const v = e.target.querySelector('video');
-                        if(e.isIntersecting) { v.play().catch(()=>{}); }
-                        else { v.pause(); }
+                        if(e.isIntersecting) { 
+                            v.play().catch(() => {});
+                            v.muted = false;
+                        } else { 
+                            v.pause(); 
+                        }
                     });
-                }, { threshold: 0.8 });
-                document.querySelectorAll('.reel').forEach(r => obs.observe(r));
+                }, { threshold: 0.7 });
+                document.querySelectorAll('.reel-video-container').forEach(r => observer.observe(r));
             },
 
             showLogin: () => document.getElementById('login-modal').style.display = 'flex',
@@ -116,13 +192,14 @@
 
             login: function() {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider)
-                    .then(() => location.reload())
-                    .catch(err => alert("Error: " + err.message));
+                auth.signInWithPopup(provider).then(() => {
+                    location.reload();
+                }).catch(err => alert("Access Denied: " + err.message));
             }
         };
 
-        app.init();
+        // Start App
+        manager.init();
     </script>
 </body>
 </html>
