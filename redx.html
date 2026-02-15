@@ -1,177 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>REDX | THE TRADING EMPIRE</title>
+<title>REDX</title>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
 
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Segoe UI;height:100vh;overflow:hidden}
-#reels-container{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
+#reels{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory}
 .reel{height:100vh;position:relative;scroll-snap-align:start}
 video{width:100%;height:100%;object-fit:cover}
-.sidebar{position:absolute;right:12px;bottom:120px;display:flex;flex-direction:column;gap:20px}
-.action{font-size:26px;cursor:pointer;text-align:center}
-.reel-overlay{position:absolute;bottom:90px;left:15px;text-shadow:0 2px 10px #000}
-nav{position:fixed;bottom:0;width:100%;height:65px;background:linear-gradient(transparent,#000);display:flex;justify-content:space-around;align-items:center}
-.nav-btn{font-size:24px;opacity:.7;cursor:pointer}
-#login{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);justify-content:center;align-items:center}
-.card{background:#111;padding:35px;border-radius:20px;text-align:center;width:85%;max-width:320px}
-.btn{margin-top:20px;padding:14px;width:100%;border:none;border-radius:10px;font-weight:bold}
+.sidebar{position:absolute;right:10px;bottom:120px}
+.btn{font-size:28px;margin:15px;cursor:pointer}
+.overlay{position:absolute;bottom:90px;left:15px}
+#login{position:fixed;inset:0;background:#000d;display:flex;justify-content:center;align-items:center}
+.card{background:#111;padding:30px;border-radius:15px;text-align:center}
 </style>
 </head>
 
 <body>
 
-<div id="reels-container"></div>
-
-<nav>
-<div class="nav-btn">🏠</div>
-<div class="nav-btn" onclick="showLogin()">🔍</div>
-<div class="nav-btn" onclick="showLogin()">➕</div>
-<div class="nav-btn" onclick="showLogin()">👤</div>
-</nav>
+<div id="reels"></div>
 
 <div id="login">
 <div class="card">
 <h2 style="color:red">REDX</h2>
-<p style="color:#888">Join The Trading Empire</p>
-<button class="btn" onclick="loginGoogle()">Continue with Google</button>
-<p onclick="hideLogin()" style="margin-top:15px;color:#666;cursor:pointer">Skip</p>
+<button onclick="login()">Continue with Google</button>
+<p onclick="skip()">Skip</p>
 </div>
 </div>
 
 <script>
 
-/* ================= FIREBASE ================= */
+/* FIREBASE */
 
-const firebaseConfig={
+firebase.initializeApp({
 apiKey:"AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
 authDomain:"red-x-global.firebaseapp.com",
 projectId:"red-x-global",
-storageBucket:"red-x-global.firebasestorage.app",
-messagingSenderId:"831636783622",
-appId:"1:831636783622:web:92271605a0dc5150123987"
-};
-
-firebase.initializeApp(firebaseConfig);
+});
 
 const auth=firebase.auth();
 const db=firebase.firestore();
 
-/* ================= LOGIN ================= */
+/* LOGIN FIX (REDIRECT METHOD) */
 
-function showLogin(){
-document.getElementById("login").style.display="flex";
+function login(){
+const provider=new firebase.auth.GoogleAuthProvider();
+auth.signInWithRedirect(provider);
 }
 
-function hideLogin(){
+auth.getRedirectResult().catch(()=>{});
+
+/* LOGIN STATE */
+
+auth.onAuthStateChanged(user=>{
+if(user){
+document.getElementById("login").style.display="none";
+}
+});
+
+/* SKIP MODE */
+
+function skip(){
 document.getElementById("login").style.display="none";
 }
 
-function loginGoogle(){
-const provider=new firebase.auth.GoogleAuthProvider();
+/* REELS ENGINE */
 
-auth.signInWithPopup(provider)
-.then(res=>{
-localStorage.setItem("redxUser",JSON.stringify({
-uid:res.user.uid,
-name:res.user.displayName
-}));
-hideLogin();
-})
-.catch(e=>alert(e.message));
-}
-
-auth.onAuthStateChanged(user=>{
-if(!user)setTimeout(showLogin,2000);
-});
-
-/* ================= LIKE SYSTEM ================= */
-
-async function toggleLike(reelId,el){
-
-const user=auth.currentUser;
-
-if(!user){
-showLogin();
-return;
-}
-
-const ref=db.collection("likes")
-.doc(reelId+"_"+user.uid);
-
-const doc=await ref.get();
-
-if(doc.exists){
-await ref.delete();
-el.innerText="🤍";
-}else{
-await ref.set({
-uid:user.uid,
-reel:reelId,
-time:Date.now()
-});
-el.innerText="❤️";
-}
-}
-
-/* ================= REELS ENGINE ================= */
-
-const videos=[
+const vids=[
 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
 ];
 
-const container=document.getElementById("reels-container");
+const container=document.getElementById("reels");
 
-for(let i=0;i<30;i++){
-
-let v=videos[i%videos.length];
-
+for(let i=0;i<20;i++){
 container.innerHTML+=`
 <div class="reel">
-<video loop playsinline muted preload="metadata">
-<source src="${v}" type="video/mp4">
+<video muted loop playsinline>
+<source src="${vids[i%3]}" type="video/mp4">
 </video>
 
 <div class="sidebar">
-<div class="action" onclick="toggleLike('reel${i}',this)">🤍</div>
-<div class="action">💬</div>
-<div class="action">✈️</div>
-<div class="action">🔖</div>
+<div class="btn" onclick="like('r${i}',this)">🤍</div>
 </div>
 
-<div class="reel-overlay">
+<div class="overlay">
 <b>Trader_${i}</b>
-<p>Market Psychology & Discipline 🚀 #REDX</p>
+<p>Discipline builds empires 🚀</p>
 </div>
 </div>`;
 }
 
-/* ================= AUTO PLAY ================= */
+/* AUTOPLAY */
 
 const observer=new IntersectionObserver(entries=>{
-entries.forEach(entry=>{
-const video=entry.target.querySelector("video");
-if(entry.isIntersecting){
-video.play().catch(()=>{});
-video.muted=false;
-}else{
-video.pause();
-}
+entries.forEach(e=>{
+const v=e.target.querySelector("video");
+if(e.isIntersecting){
+v.play().catch(()=>{});
+}else v.pause();
 });
-},{threshold:.75});
+},{threshold:.7});
 
 document.querySelectorAll(".reel")
 .forEach(r=>observer.observe(r));
+
+/* LIKE SYSTEM */
+
+async function like(id,el){
+
+const user=auth.currentUser;
+if(!user){
+alert("Login required");
+return;
+}
+
+const ref=db.collection("likes")
+.doc(id+"_"+user.uid);
+
+const d=await ref.get();
+
+if(d.exists){
+await ref.delete();
+el.innerText="🤍";
+}else{
+await ref.set({time:Date.now()});
+el.innerText="❤️";
+}
+}
 
 </script>
 </body>
