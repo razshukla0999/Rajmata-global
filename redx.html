@@ -1,141 +1,276 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>REDX</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore-compat.js"></script>
+<title>REDX TycoonOS</title>
 
 <style>
-body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
-#reels{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory}
-.reel{height:100vh;position:relative;scroll-snap-align:start}
-video{width:100%;height:100%;object-fit:cover}
-.sidebar{position:absolute;right:10px;bottom:120px}
-.btn{font-size:28px;margin:15px;cursor:pointer}
-.overlay{position:absolute;bottom:90px;left:15px}
-#login{position:fixed;inset:0;background:#000d;display:flex;justify-content:center;align-items:center}
-.card{background:#111;padding:30px;border-radius:15px;text-align:center}
+/* =========================
+   GLOBAL STYLE
+========================= */
+
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#0b0f1a;
+    color:white;
+    overflow:hidden;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+#topbar{
+    height:40px;
+    background:#111827;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    border-bottom:1px solid #222;
+}
+
+#clock{
+    font-size:14px;
+}
+
+/* =========================
+   DESKTOP
+========================= */
+
+#desktop{
+    position:absolute;
+    top:40px;
+    bottom:50px;
+    left:0;
+    right:0;
+    padding:20px;
+}
+
+/* =========================
+   ICON
+========================= */
+
+.icon{
+    width:80px;
+    text-align:center;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.icon img{
+    width:48px;
+}
+
+/* =========================
+   TASKBAR
+========================= */
+
+#taskbar{
+    position:absolute;
+    bottom:0;
+    height:50px;
+    width:100%;
+    background:#111827;
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    border-top:1px solid #222;
+}
+
+#startBtn{
+    background:#2563eb;
+    border:none;
+    color:white;
+    padding:8px 15px;
+    cursor:pointer;
+}
+
+/* =========================
+   WINDOW
+========================= */
+
+.window{
+    position:absolute;
+    width:500px;
+    height:350px;
+    background:#1f2937;
+    border:1px solid #333;
+    display:none;
+    flex-direction:column;
+}
+
+.window-header{
+    background:#111827;
+    padding:8px;
+    cursor:move;
+    display:flex;
+    justify-content:space-between;
+}
+
+.window-body{
+    flex:1;
+    padding:10px;
+    overflow:auto;
+}
+
+/* =========================
+   START MENU
+========================= */
+
+#startMenu{
+    position:absolute;
+    bottom:50px;
+    left:10px;
+    width:220px;
+    background:#1f2937;
+    border:1px solid #333;
+    display:none;
+}
+
+.menu-item{
+    padding:10px;
+    cursor:pointer;
+}
+
+.menu-item:hover{
+    background:#374151;
+}
 </style>
 </head>
 
 <body>
 
-<div id="reels"></div>
+<!-- ================= TOPBAR ================= -->
+<div id="topbar">
+    <div>REDX TycoonOS</div>
+    <div id="clock"></div>
+</div>
 
-<div id="login">
-<div class="card">
-<h2 style="color:red">REDX</h2>
-<button onclick="login()">Continue with Google</button>
-<p onclick="skip()">Skip</p>
+<!-- ================= DESKTOP ================= -->
+<div id="desktop">
+
+    <div class="icon" onclick="openWindow('notesWin')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+        <div>Notes</div>
+    </div>
+
+    <div class="icon" onclick="openWindow('browserWin')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png">
+        <div>Browser</div>
+    </div>
+
 </div>
+
+<!-- ================= WINDOWS ================= -->
+
+<div class="window" id="notesWin">
+    <div class="window-header">
+        Notes
+        <button onclick="closeWindow('notesWin')">X</button>
+    </div>
+    <div class="window-body">
+        <textarea style="width:100%;height:100%;background:#111;color:white;border:none;"></textarea>
+    </div>
 </div>
+
+<div class="window" id="browserWin">
+    <div class="window-header">
+        Mini Browser
+        <button onclick="closeWindow('browserWin')">X</button>
+    </div>
+    <div class="window-body">
+        <input id="urlBox" placeholder="Enter URL..." style="width:80%">
+        <button onclick="loadSite()">Go</button>
+        <iframe id="browserFrame" style="width:100%;height:85%;border:none;"></iframe>
+    </div>
+</div>
+
+<!-- ================= START MENU ================= -->
+
+<div id="startMenu">
+    <div class="menu-item" onclick="openWindow('notesWin')">Notes</div>
+    <div class="menu-item" onclick="openWindow('browserWin')">Browser</div>
+</div>
+
+<!-- ================= TASKBAR ================= -->
+
+<div id="taskbar">
+    <button id="startBtn" onclick="toggleStart()">Start</button>
+</div>
+
+<!-- ================= SCRIPT ================= -->
 
 <script>
 
-/* FIREBASE */
+/* ================= CLOCK ================= */
 
-firebase.initializeApp({
-apiKey:"AIzaSyAKEjsvgdp9qfyrzo1qP0di4fscn8iSKaw",
-authDomain:"red-x-global.firebaseapp.com",
-projectId:"red-x-global",
+function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").innerText =
+        now.toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* ================= START MENU ================= */
+
+function toggleStart(){
+    const menu = document.getElementById("startMenu");
+    menu.style.display =
+        menu.style.display==="block" ? "none":"block";
+}
+
+/* ================= WINDOWS ================= */
+
+function openWindow(id){
+    document.getElementById(id).style.display="flex";
+}
+
+function closeWindow(id){
+    document.getElementById(id).style.display="none";
+}
+
+/* ================= MINI BROWSER ================= */
+
+function loadSite(){
+    let url=document.getElementById("urlBox").value;
+
+    if(!url.startsWith("http")){
+        url="https://"+url;
+    }
+
+    document.getElementById("browserFrame").src=url;
+}
+
+/* ================= DRAG WINDOW ================= */
+
+document.querySelectorAll(".window").forEach(win=>{
+    let isDragging=false,offsetX,offsetY;
+
+    const header=win.querySelector(".window-header");
+
+    header.onmousedown=(e)=>{
+        isDragging=true;
+        offsetX=e.clientX-win.offsetLeft;
+        offsetY=e.clientY-win.offsetTop;
+    };
+
+    document.onmousemove=(e)=>{
+        if(isDragging){
+            win.style.left=(e.clientX-offsetX)+"px";
+            win.style.top=(e.clientY-offsetY)+"px";
+        }
+    };
+
+    document.onmouseup=()=>isDragging=false;
 });
-
-const auth=firebase.auth();
-const db=firebase.firestore();
-
-/* LOGIN FIX (REDIRECT METHOD) */
-
-function login(){
-const provider=new firebase.auth.GoogleAuthProvider();
-auth.signInWithRedirect(provider);
-}
-
-auth.getRedirectResult().catch(()=>{});
-
-/* LOGIN STATE */
-
-auth.onAuthStateChanged(user=>{
-if(user){
-document.getElementById("login").style.display="none";
-}
-});
-
-/* SKIP MODE */
-
-function skip(){
-document.getElementById("login").style.display="none";
-}
-
-/* REELS ENGINE */
-
-const vids=[
-"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-];
-
-const container=document.getElementById("reels");
-
-for(let i=0;i<20;i++){
-container.innerHTML+=`
-<div class="reel">
-<video muted loop playsinline>
-<source src="${vids[i%3]}" type="video/mp4">
-</video>
-
-<div class="sidebar">
-<div class="btn" onclick="like('r${i}',this)">🤍</div>
-</div>
-
-<div class="overlay">
-<b>Trader_${i}</b>
-<p>Discipline builds empires 🚀</p>
-</div>
-</div>`;
-}
-
-/* AUTOPLAY */
-
-const observer=new IntersectionObserver(entries=>{
-entries.forEach(e=>{
-const v=e.target.querySelector("video");
-if(e.isIntersecting){
-v.play().catch(()=>{});
-}else v.pause();
-});
-},{threshold:.7});
-
-document.querySelectorAll(".reel")
-.forEach(r=>observer.observe(r));
-
-/* LIKE SYSTEM */
-
-async function like(id,el){
-
-const user=auth.currentUser;
-if(!user){
-alert("Login required");
-return;
-}
-
-const ref=db.collection("likes")
-.doc(id+"_"+user.uid);
-
-const d=await ref.get();
-
-if(d.exists){
-await ref.delete();
-el.innerText="🤍";
-}else{
-await ref.set({time:Date.now()});
-el.innerText="❤️";
-}
-}
 
 </script>
+
 </body>
 </html>
+
